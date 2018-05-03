@@ -1,0 +1,14 @@
+--26/12/2017
+ALTER TABLE public.childrens ADD COLUMN "is_deleted" BOOLEAN DEFAULT FALSE;
+
+--27/12/2017
+ALTER TABLE public.tasks ADD COLUMN "is_deleted" BOOLEAN DEFAULT FALSE;
+
+--29/12/2017
+
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO earnituser;
+GRANT ALL PRIVILEGES ON ALL TABLES  IN SCHEMA public TO earnituser;
+
+ALTER TABLE public.goals ADD COLUMN "is_deleted" BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE public.tasks ADD COLUMN "should_lock_apps_if_task_overdue" BOOLEAN DEFAULT FALSE;
