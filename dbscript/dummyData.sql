@@ -18,7 +18,7 @@ insert into "public"."childrens" ( "id", "first_name", "password", "avatar", "ph
 --Goal
 --TRUNCATE TABLE  "public"."goals" ;
 
-insert into "public"."goals" ( "id", "amount", "create_date", "update_date", "account_id", "name") values ( 1, '5000', '2017-07-04 12:21:22', '2017-07-04 12:21:24', '1', 'Trip to Disney Land');
+insert into "public"."goals" ( "id", "amount", "create_date", "update_date", "child_id", "name") values ( 1, '5000', '2017-07-04 12:21:22', '2017-07-04 12:21:24', '1', 'Trip to Disney Land');
 
 -- repitation schedules
 TRUNCATE TABLE  "public"."repitition_schedule" CASCADE;
