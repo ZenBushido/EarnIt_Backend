@@ -17,7 +17,6 @@ import com.mobiledi.earnitapi.domain.Parent;
 
 @Repository
 public class ParentRepositoryImpl implements ParentRepositoryCustom {
-	private static Log logger = LogFactory.getLog(ParentRepositoryImpl.class);
 
 	@PersistenceContext
 	EntityManager entityManager;

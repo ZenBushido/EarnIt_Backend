@@ -1,29 +1,19 @@
 package com.mobiledi.earnitapi.repository.custom;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
+import com.mobiledi.earnitapi.domain.QTask;
+import com.mobiledi.earnitapi.domain.Task;
+import com.querydsl.jpa.impl.JPAQuery;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mobiledi.earnitapi.domain.QTask;
-import com.mobiledi.earnitapi.domain.Task;
-import com.mobiledi.earnitapi.util.AppConstants;
-import com.mobiledi.earnitapi.util.AppConstants.TaskFrequency;
-import com.querydsl.jpa.impl.JPAQuery;
-
+@Slf4j
 @Repository
 public class TaskRepositoryImpl implements TaskRepositoryCustom {
-	private static Log logger = LogFactory.getLog(TaskRepositoryImpl.class);
 
 	@PersistenceContext
 	EntityManager entityManager;
@@ -35,7 +25,7 @@ public class TaskRepositoryImpl implements TaskRepositoryCustom {
 		JPAQuery<Task> query = new JPAQuery<Task>(entityManager);
 		List<Task> tasks = query.select(task).from(task).where(task.repititionSchedule.isNotNull())
 				.fetch();
-		logger.info("Total count for reapet tasks found : " + tasks.size());
+		log.info("Total count for reapet tasks found : " + tasks.size());
 
 		return tasks.parallelStream().filter(task1 -> !task1.isDeleted()).collect(Collectors.toList());
 		/*List<Task> returnList = new ArrayList<Task>();
