@@ -23,7 +23,7 @@ public class FetchReatedTask {
 	      System.out.println("in before class");
 	   }
 
-	@Test
+	//@Test
 	public void test() {
 
 

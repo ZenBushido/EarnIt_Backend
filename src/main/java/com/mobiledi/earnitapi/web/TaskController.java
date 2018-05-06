@@ -1,5 +1,6 @@
 package com.mobiledi.earnitapi.web;
 
+import com.mobiledi.earnitapi.services.GoalService;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,6 +68,9 @@ public class TaskController {
 
 	@PersistenceContext
 	EntityManager entityManager;
+
+	@Autowired
+	private GoalService goalService;
 
 	@RequestMapping(value = "/tasks", method = RequestMethod.GET)
 	public List<Task> findAllRepeatTAsk() {
@@ -129,6 +134,12 @@ public class TaskController {
 	@RequestMapping(value = "/tasks", method = RequestMethod.PUT)
 	public ResponseEntity<?> update(@RequestBody Task task) throws JSONException {
 
+		Optional<Task> taskOptional = taskRepo.findById(task.getId());
+
+		validateTask(taskOptional, task.getId());
+
+		final Task persistedTask = taskRepo.findById(task.getId()).get();
+
 		if (task.getTaskComments() != null && task.getTaskComments().size() > 0) {
 
 			// Save any Task comment
@@ -136,7 +147,7 @@ public class TaskController {
 			task.getTaskComments().forEach(taskComment -> {
 				TaskComment toSave = taskComment;
 				toSave.setCreateDate(new Timestamp(new DateTime().getMillis()));
-				toSave.setTask(task);
+				toSave.setTask(persistedTask);
 				taskCommentRepo.save(toSave);
 			});
 
@@ -150,9 +161,9 @@ public class TaskController {
 			});
 		}
 
-		task.setUpdateDate(new Timestamp(new DateTime().getMillis()));
+		persistedTask.setUpdateDate(new Timestamp(new DateTime().getMillis()));
 
-		Task taskObject = taskRepo.save(task);
+		Task taskObject = taskRepo.save(persistedTask);
 		Children notifyChild = taskObject.getChildren();
 		logger.info(" Children fcm ID" + notifyChild.getFcmToken());
 
@@ -163,7 +174,7 @@ public class TaskController {
 					PushNotifier.sendPushNotification(0, notifyChild.getFcmToken(), NotificationCategory.TASK_CLOSED,
 							task.getName());
 					// CHECK IF THE GOAL HAS BEEN COMPLETED
-					boolean isGoalReached = checkIfGoalReached(taskObject.getGoal());
+					boolean isGoalReached = goalService.checkIfGoalReached(taskObject.getGoal());
 					if (isGoalReached) {
 						PushNotifier.sendPushNotification(0, notifyChild.getFcmToken(),
 								NotificationCategory.GOAL_REACHED, task.getName());
@@ -214,23 +225,9 @@ public class TaskController {
         });
 	}
 
-	private boolean checkIfGoalReached(Goal goal) {
-		if (goal == null) {
-			return false;
-		}
-		double tally = 0;
-		for (Task task : goal.getTasks()) {
-			if (task.getStatus().equalsIgnoreCase(AppConstants.TASK_CLOSED)) {
-				tally += task.getAllowance();
-			}
-		}
-
-		if (tally >= goal.getAmount()) {
-			logger.info("Goal " + goal.getName() + "has completed");
-			return true;
-		} else {
-			logger.info("Goal " + goal.getName() + " is yet to be completed");
-			return false;
+	private void validateTask(Optional taskOptional, Integer taskId) {
+		if (!taskOptional.isPresent()) {
+			throw new ValidationException("Task with id : " + taskId + " does not exist.", 400);
 		}
 	}
 }
