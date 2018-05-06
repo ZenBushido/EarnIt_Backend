@@ -1,0 +1,5 @@
+databaseChangeLog:
+- include:
+    file: db/changelog/20180506/ddl.changelog.xml
+- include:
+    file: db/changelog/20180506/dml.changelog.xml
