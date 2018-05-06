@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -15,9 +16,9 @@ import com.mobiledi.earnitapi.domain.Children;
 import com.mobiledi.earnitapi.util.AppConstants.ChildAccoutActionType;
 import com.mobiledi.earnitapi.util.SMSUtility;
 
+@Slf4j
 @Repository
 public class ChildrenRepositoryImpl implements ChildrenRepositoryCustom {
-	private static Log logger = LogFactory.getLog(ChildrenRepositoryImpl.class);
 
 	@PersistenceContext
 	EntityManager entityManager;
@@ -27,7 +28,7 @@ public class ChildrenRepositoryImpl implements ChildrenRepositoryCustom {
 	public Children persistChild(Children child) {
 		child.setCreateDate(new Timestamp(new DateTime().getMillis()));
 		entityManager.persist(child);
-		logger.info("Message Sending success? :" + SMSUtility.SendSMS(child, ChildAccoutActionType.UPDATE));
+		log.info("Message Sending success? :" + SMSUtility.SendSMS(child, ChildAccoutActionType.UPDATE));
 		return child;
 	}
 

@@ -1,5 +1,6 @@
 package com.mobiledi.earnitapi.web;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import com.mobiledi.earnitapi.domain.custom.Response;
 import com.mobiledi.earnitapi.repository.AdjustmentsRepository;
 import com.mobiledi.earnitapi.repository.ChildrenRepository;
 import com.mobiledi.earnitapi.util.MessageConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -34,9 +36,9 @@ import com.mobiledi.earnitapi.util.AppConstants;
 
 import static com.mobiledi.earnitapi.util.MessageConstants.*;
 
+@Slf4j
 @RestController
 public class GoalController {
-	private static Log logger = LogFactory.getLog(GoalController.class);
 
 	@Autowired
 	GoalRepository goalRepo;
@@ -104,21 +106,21 @@ public class GoalController {
 			return new ArrayList<>();
 
 		for (Goal goal : goals) {
-			double tally = 0;
+			BigDecimal tally = new BigDecimal(0.0);
 			for (Task task : goal.getTasks()) {
 				if (task.getStatus().equalsIgnoreCase(AppConstants.TASK_CLOSED)) {
-					tally += task.getAllowance();
+					tally = tally.add(task.getAllowance());
 				}
 			}
 			goal.setTally(tally);
-			goal.setTallyPercent((tally / goal.getAmount()) * 100);
+			goal.setTallyPercent(tally.divide(goal.getAmount().multiply(BigDecimal.valueOf(100))));
 		}
 		
 		List<Task> tasks = taskRepo.findByChildrenIdAndIsDeleted(id, false);
-		double cash = 0;
+		BigDecimal cash = new BigDecimal(0);
 		for(Task task : tasks){
 			if (task.getStatus().equalsIgnoreCase(AppConstants.TASK_CLOSED) && task.getGoal() == null) {
-				cash += task.getAllowance();
+				cash = cash.add(task.getAllowance());
 			}
 		}
 
@@ -134,7 +136,7 @@ public class GoalController {
 			goal.setDeleted(true);
 			goal.setUpdateDate(new Timestamp(new DateTime().getMillis()));
 
-			logger.debug("Deleting goal: " + goal.getId());
+			log.debug("Deleting goal: " + goal.getId());
 			goalRepo.save(goal);
 
 			if(goal.getTasks() != null) {
@@ -142,7 +144,7 @@ public class GoalController {
 					task.setDeleted(true);
 					task.setUpdateDate(new Timestamp(new DateTime().getMillis()));
 
-					logger.debug("Deleting task: " + task.getId());
+					log.debug("Deleting task: " + task.getId());
 					taskRepo.save(task);
 				});
 			}

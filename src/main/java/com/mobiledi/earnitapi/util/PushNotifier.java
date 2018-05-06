@@ -1,23 +1,19 @@
 package com.mobiledi.earnitapi.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.mobiledi.earnitapi.util.NotificationConstants.NotificationCategory;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.mobiledi.earnitapi.util.NotificationConstants.NotificationCategory;
-
 import us.raudi.pushraven.Pushraven;
 
+@Slf4j
 final public class PushNotifier {
-	private static Log logger = LogFactory.getLog(PushNotifier.class);
 
 	public static boolean sendPushNotification(int childId, String deviceKey, NotificationCategory type, String messageBody) {
 
 		if(StringUtils.isEmpty(deviceKey)) {
-			logger.error("No device key found for sending push notification: " + type + ", messageBody: " + messageBody);
+			log.error("No device key found for sending push notification: " + type + ", messageBody: " + messageBody);
 			return false;
 		}
 
@@ -30,7 +26,7 @@ final public class PushNotifier {
 
 		Pushraven.setKey(AppConstants.FIREBASE_SERVER_KEY);
 
-		logger.info("CREATING PUSH FOR: " + deviceKey + " " + type);
+		log.info("CREATING PUSH FOR: " + deviceKey + " " + type);
 		switch (type) {
 			case TASK_REASSIGNED:
 				Pushraven.notification.title(NotificationConstants.TASK_REASSIGNED_TITLE).color("#ff0000");

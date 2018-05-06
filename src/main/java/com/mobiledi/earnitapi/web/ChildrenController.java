@@ -9,6 +9,7 @@ import java.util.Optional;
 import com.mobiledi.earnitapi.domain.custom.ApiError;
 import com.mobiledi.earnitapi.domain.custom.Response;
 import com.mobiledi.earnitapi.util.MessageConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,9 +36,9 @@ import com.mobiledi.earnitapi.util.SMSUtility;
 
 import static com.mobiledi.earnitapi.util.MessageConstants.*;
 
+@Slf4j
 @RestController
 public class ChildrenController {
-	private static Log logger = LogFactory.getLog(ChildrenController.class);
 
 	@Autowired
 	private ChildrenRepository childrenRepo;
@@ -71,7 +72,7 @@ public class ChildrenController {
 			children.setDeleted(true);
 			children.setUpdateDate(new Timestamp(new DateTime().getMillis()));
 
-			logger.debug("Deleting child account: " + children.getId());
+			log.debug("Deleting child account: " + children.getId());
 			childrenRepo.save(children);
 
 			return new ResponseEntity<>(new Response(MessageConstants.CHILDREN_DELETED), HttpStatus.OK);
@@ -93,10 +94,10 @@ public class ChildrenController {
 			PushNotifier.sendPushNotification(0, child.getFcmToken(), NotificationCategory.MESSAGE_TO_CHILD, child.getMessage());		
 		
 		if(lastChildRecord!= null){
-		logger.info("previous phone number is : "+lastUpdatedNumber);
-		logger.info("updating phone number to : "+child.getPhone());
+		log.info("previous phone number is : "+lastUpdatedNumber);
+		log.info("updating phone number to : "+child.getPhone());
 			if(!lastUpdatedNumber.equalsIgnoreCase(child.getPhone()))
-				logger.info("Message Sending success? :" + SMSUtility.SendSMS(child, ChildAccoutActionType.ADD));
+				log.info("Message Sending success? :" + SMSUtility.SendSMS(child, ChildAccoutActionType.ADD));
 		}
 //		logger.info("Message Sending success? :" + SMSUtility.SendSMS(child, ChildAccoutActionType.ADD));
 		if (childObject != null)

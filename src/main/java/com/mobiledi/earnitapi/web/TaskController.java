@@ -1,26 +1,37 @@
 package com.mobiledi.earnitapi.web;
 
-import com.mobiledi.earnitapi.services.GoalService;
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Optional;
+import static com.mobiledi.earnitapi.util.MessageConstants.TASK_DELETED;
+import static com.mobiledi.earnitapi.util.MessageConstants.TASK_DELETED_FAILED;
+import static com.mobiledi.earnitapi.util.MessageConstants.TASK_DELETED_FAILED_CODE;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
+import com.mobiledi.earnitapi.domain.Children;
+import com.mobiledi.earnitapi.domain.Goal;
+import com.mobiledi.earnitapi.domain.Parent;
+import com.mobiledi.earnitapi.domain.Task;
+import com.mobiledi.earnitapi.domain.TaskComment;
 import com.mobiledi.earnitapi.domain.custom.ApiError;
 import com.mobiledi.earnitapi.domain.custom.Response;
 import com.mobiledi.earnitapi.repository.DayTaskStatusRepository;
 import com.mobiledi.earnitapi.repository.GoalRepository;
-import com.mobiledi.earnitapi.util.MessageConstants;
-import com.mobiledi.earnitapi.util.NotificationConstants;
+import com.mobiledi.earnitapi.repository.TaskCommentRepository;
+import com.mobiledi.earnitapi.repository.TasksRepository;
+import com.mobiledi.earnitapi.repository.custom.ChildrenRepositoryCustom;
+import com.mobiledi.earnitapi.repository.custom.TaskRepositoryCustom;
+import com.mobiledi.earnitapi.services.GoalService;
+import com.mobiledi.earnitapi.util.AppConstants;
+import com.mobiledi.earnitapi.util.NotificationConstants.NotificationCategory;
+import com.mobiledi.earnitapi.util.PushNotifier;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.WebServerException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,24 +40,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mobiledi.earnitapi.domain.Children;
-import com.mobiledi.earnitapi.domain.Goal;
-import com.mobiledi.earnitapi.domain.Parent;
-import com.mobiledi.earnitapi.domain.Task;
-import com.mobiledi.earnitapi.domain.TaskComment;
-import com.mobiledi.earnitapi.repository.TaskCommentRepository;
-import com.mobiledi.earnitapi.repository.TasksRepository;
-import com.mobiledi.earnitapi.repository.custom.ChildrenRepositoryCustom;
-import com.mobiledi.earnitapi.repository.custom.TaskRepositoryCustom;
-import com.mobiledi.earnitapi.util.AppConstants;
-import com.mobiledi.earnitapi.util.NotificationConstants.NotificationCategory;
-import com.mobiledi.earnitapi.util.PushNotifier;
-
-import static com.mobiledi.earnitapi.util.MessageConstants.*;
-
+@Slf4j
 @RestController
 public class TaskController {
-	private static Log logger = LogFactory.getLog(TaskController.class);
 
 	@Autowired
 	TasksRepository taskRepo;
@@ -74,7 +70,7 @@ public class TaskController {
 
 	@RequestMapping(value = "/tasks", method = RequestMethod.GET)
 	public List<Task> findAllRepeatTAsk() {
-		logger.info("fetchign repeat task list ");
+		log.info("fetchign repeat task list ");
 
 		List<Task> tasks = taskRepoCustom.fetchRepeatTask();
 		return tasks;
@@ -103,7 +99,7 @@ public class TaskController {
 			return;
 
 		Children notifyChild = childRepo.findChild(taskObject.getChildren().getId());
-		logger.info("Children id/email/FCM ID on ADD task" + notifyChild.getId() + " /" + notifyChild.getEmail() + " /"
+		log.info("Children id/email/FCM ID on ADD task" + notifyChild.getId() + " /" + notifyChild.getEmail() + " /"
 				+ notifyChild.getFcmToken());
 
 		if (StringUtils.isNotBlank(notifyChild.getFcmToken())) {
@@ -120,7 +116,7 @@ public class TaskController {
 			task.setDeleted(true);
 			task.setUpdateDate(new Timestamp(new DateTime().getMillis()));
 
-			logger.debug("Deleting task: " + task.getId());
+			log.debug("Deleting task: " + task.getId());
 			taskRepo.save(task);
 
 			return new ResponseEntity<>(new Response(TASK_DELETED), HttpStatus.OK);
@@ -163,9 +159,26 @@ public class TaskController {
 
 		persistedTask.setUpdateDate(new Timestamp(new DateTime().getMillis()));
 
+		if (Objects.nonNull(task.getAllowance())) {
+			persistedTask.setAllowance(task.getAllowance());
+		}
+
+		if (Objects.nonNull(task.getName())) {
+			persistedTask.setName(task.getName());
+		}
+
+		if (Objects.nonNull(task.getStatus())) {
+			persistedTask.setStatus(task.getStatus());
+		}
+
+		if (Objects.nonNull(task.getDueDate())) {
+			persistedTask.setDueDate(task.getDueDate());
+		}
+
+
 		Task taskObject = taskRepo.save(persistedTask);
 		Children notifyChild = taskObject.getChildren();
-		logger.info(" Children fcm ID" + notifyChild.getFcmToken());
+		log.info(" Children fcm ID" + notifyChild.getFcmToken());
 
 		if (taskObject != null) {
 			if (StringUtils.isNotBlank(notifyChild.getFcmToken())) {

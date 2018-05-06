@@ -2,18 +2,35 @@ package com.mobiledi.earnit.earnitapi;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mobiledi.earnitapi.domain.*;
+import com.mobiledi.earnitapi.domain.Account;
+import com.mobiledi.earnitapi.domain.Adjustments;
+import com.mobiledi.earnitapi.domain.Children;
+import com.mobiledi.earnitapi.domain.DayTaskStatus;
+import com.mobiledi.earnitapi.domain.Goal;
+import com.mobiledi.earnitapi.domain.Parent;
+import com.mobiledi.earnitapi.domain.RepititionSchedule;
+import com.mobiledi.earnitapi.domain.Task;
 import com.mobiledi.earnitapi.util.AppConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHost;
-import org.springframework.http.*;
-import org.springframework.http.client.support.BasicAuthorizationInterceptor;
-import org.springframework.web.client.RestTemplate;
-
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TimeZone;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.support.BasicAuthorizationInterceptor;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Created by Sunil Gulabani on 23-12-2017.
@@ -218,7 +235,7 @@ public class DummyData {
         System.out.println("------------------------------------------");
         Goal goal = new Goal();
         goal.setName("Goal - " + new Date());
-        goal.setAmount(1000);
+        goal.setAmount(BigDecimal.valueOf(1000));
         Children children = new Children();
         children.setId(childrenId);
         goal.setChildren(children);
@@ -258,7 +275,7 @@ public class DummyData {
         Children children = new Children();
         children.setId(childrenId);
         task.setChildren(children);
-        task.setAllowance(100);
+        task.setAllowance(BigDecimal.valueOf(100));
         task.setDeleted(false);
         task.setDescription("Dummy Task 1");
         task.setDueDate(new Timestamp(Instant.now().plus(7, ChronoUnit.DAYS).toEpochMilli()));

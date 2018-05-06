@@ -1,5 +1,15 @@
 package com.mobiledi.earnitapi.web;
 
+import static com.mobiledi.earnitapi.util.MessageConstants.MAIL_SENT_FAILED;
+import static com.mobiledi.earnitapi.util.MessageConstants.MAIL_SENT_FAILED_CODE;
+import static com.mobiledi.earnitapi.util.MessageConstants.MAIL_SENT_SUCCESS;
+import static com.mobiledi.earnitapi.util.MessageConstants.PASSWORD_REMINDER_MAIL_BODY;
+import static com.mobiledi.earnitapi.util.MessageConstants.PASSWORD_REMINDER_MAIL_SUBJECT;
+import static com.mobiledi.earnitapi.util.MessageConstants.USER_DOES_NOT_EXISTS;
+import static com.mobiledi.earnitapi.util.MessageConstants.USER_DOES_NOT_EXISTS_CODE;
+import static com.mobiledi.earnitapi.util.MessageConstants.USER_EXISTS;
+import static com.mobiledi.earnitapi.util.MessageConstants.USER_EXISTS_CODE;
+
 import com.mobiledi.earnitapi.domain.Account;
 import com.mobiledi.earnitapi.domain.Children;
 import com.mobiledi.earnitapi.domain.Parent;
@@ -11,19 +21,20 @@ import com.mobiledi.earnitapi.repository.custom.ChildrenRepositoryCustom;
 import com.mobiledi.earnitapi.repository.custom.ParentRepositoryCustom;
 import com.mobiledi.earnitapi.util.AppConstants;
 import com.mobiledi.earnitapi.util.MailUtility;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import static com.mobiledi.earnitapi.util.MessageConstants.*;
-
+@Slf4j
 @RestController
 public class AccountController {
-	private static Log logger = LogFactory.getLog(AccountController.class);
 
 	@Autowired
 	AccountRepository accountRepo;
@@ -63,14 +74,14 @@ public class AccountController {
 		Children children = accountRepo.findChildByEmail(domain.getEmail());
 		if(children != null) {
 			password = children.getPassword();
-			logger.debug("Email matched with child account" + children.getId());
+			log.debug("Email matched with child account" + children.getId());
 		}
 
 		if(password == null) {
 			Parent parent = accountRepo.findParentByEmail(domain.getEmail());
 			if(parent != null) {
 				password = parent.getPassword();
-				logger.debug("Email matched with parent account" + parent.getId());
+				log.debug("Email matched with parent account" + parent.getId());
 			}
 		}
 
@@ -104,7 +115,7 @@ public class AccountController {
 			}
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		} else {
-			logger.info(userExists + " Check if email exists: " + parent.getEmail());
+			log.info(userExists + " Check if email exists: " + parent.getEmail());
 
 			ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, USER_EXISTS_CODE,
 					USER_EXISTS);
@@ -127,7 +138,7 @@ public class AccountController {
 			}
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		} else {
-			logger.info(userExists + " Check if email exists: " + child.getEmail());
+			log.info(userExists + " Check if email exists: " + child.getEmail());
 
 			ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, USER_EXISTS_CODE,
 					USER_EXISTS);
@@ -138,7 +149,7 @@ public class AccountController {
 	}
 
 	private boolean checkIfUserExists(String email) {
-		logger.info("Check if email exists: " + email);
+		log.info("Check if email exists: " + email);
 		Children children = accountRepo.findChildByEmail(email);
 		Parent parent = accountRepo.findParentByEmail(email);
 		if (children != null || parent != null) {

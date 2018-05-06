@@ -1,26 +1,23 @@
 package com.mobiledi.earnitapi.repository.custom;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.mobiledi.earnitapi.domain.Children;
 import com.mobiledi.earnitapi.domain.Parent;
 import com.mobiledi.earnitapi.domain.QChildren;
 import com.mobiledi.earnitapi.domain.QParent;
 import com.querydsl.jpa.impl.JPAQuery;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class AccountRepositoryImpl implements AccountRepositoryCustom {
-	private static Log logger = LogFactory.getLog(AccountRepositoryImpl.class);
 
 	@PersistenceContext
 	EntityManager entityManager;
 
 	@Override
 	public Parent findParentbyemailandpassword(String email, String password) {
-		logger.info("Trying to login a parent " + email);
+		log.info("Trying to login a parent " + email);
 		QParent parent = QParent.parent;
 
 		JPAQuery<?> query = new JPAQuery<Void>(entityManager);
@@ -32,7 +29,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 
 	@Override
 	public Children findChildbyemailandpassword(String email, String password) {
-		logger.info("Trying to login a child " + email);
+		log.info("Trying to login a child " + email);
 		QChildren child = QChildren.children;
 
 		JPAQuery<?> query = new JPAQuery<Void>(entityManager);
@@ -45,7 +42,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 	@Override
 	public Parent findParentByEmail(String email) {
 		QParent parent = QParent.parent;
-		logger.info("Trying to validate as a Parent user...");
+		log.info("Trying to validate as a Parent user...");
 
 		JPAQuery<?> query = new JPAQuery<Void>(entityManager);
 		Parent parentObject = query.select(parent).from(parent).where(parent.email.equalsIgnoreCase(email)).fetchOne();
@@ -56,7 +53,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 	public Children findChildByEmail(String email) {
 		QChildren child = QChildren.children;
 
-		logger.info("Trying validate as a Child user...XX");
+		log.info("Trying validate as a Child user...XX");
 
 		JPAQuery<?> query = new JPAQuery<Void>(entityManager);
 		Children childObject = query.select(child).from(child).where(child.email.equalsIgnoreCase(email)).fetchOne();

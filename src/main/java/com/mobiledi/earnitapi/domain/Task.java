@@ -1,6 +1,7 @@
 package com.mobiledi.earnitapi.domain;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class Task implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TASKS_ID_GENERATOR")
 	private Integer id;
 
-	private double allowance;
+	private BigDecimal allowance;
 
 	@Column(name = "create_date")
 	@JsonFormat(pattern="MMM d, yyyy hh:mm:ss a")
@@ -96,11 +97,11 @@ public class Task implements Serializable {
 		this.id = id;
 	}
 
-	public double getAllowance() {
+	public BigDecimal getAllowance() {
 		return this.allowance;
 	}
 
-	public void setAllowance(double allowance) {
+	public void setAllowance(BigDecimal allowance) {
 		this.allowance = allowance;
 	}
 

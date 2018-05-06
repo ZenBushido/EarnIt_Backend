@@ -1,9 +1,13 @@
 package com.mobiledi.earnitapi.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,11 +20,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 /**
  * The persistent class for the goals database table.
@@ -38,7 +37,7 @@ public class Goal implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "GOALS_ID_GENERATOR")
 	private Integer id;
 
-	private double amount;
+	private BigDecimal amount;
 
 	@Column(name = "create_date")
 	@JsonFormat(pattern="MMM d, yyyy hh:mm:ss a")
@@ -62,24 +61,24 @@ public class Goal implements Serializable {
 	private List<Task> tasks;
 
 	@Transient
-	private double tally;
+	private BigDecimal tally;
 
 	@Transient
-	private double tallyPercent;
+	private BigDecimal tallyPercent;
 	
 	@Transient
-	private double cash;
+	private BigDecimal cash;
 
 	@OneToMany(mappedBy = "goal")
 	private List<Adjustments> adjustments;
 
 	private boolean isDeleted;
 
-	public double getCash() {
+	public BigDecimal getCash() {
 		return cash;
 	}
 
-	public void setCash(double cash) {
+	public void setCash(BigDecimal cash) {
 		this.cash = cash;
 	}
 
@@ -94,11 +93,11 @@ public class Goal implements Serializable {
 		this.id = id;
 	}
 
-	public double getAmount() {
+	public BigDecimal getAmount() {
 		return this.amount;
 	}
 
-	public void setAmount(double amount) {
+	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
 
@@ -134,19 +133,19 @@ public class Goal implements Serializable {
 		this.children = children;
 	}
 
-	public double getTally() {
+	public BigDecimal getTally() {
 		return tally;
 	}
 
-	public void setTally(double tally) {
+	public void setTally(BigDecimal tally) {
 		this.tally = tally;
 	}
 
-	public double getTallyPercent() {
+	public BigDecimal getTallyPercent() {
 		return tallyPercent;
 	}
 
-	public void setTallyPercent(double d) {
+	public void setTallyPercent(BigDecimal d) {
 		this.tallyPercent = d;
 	}
 

@@ -1,12 +1,9 @@
 package com.mobiledi.earnitapi.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import static com.mobiledi.earnitapi.util.MessageConstants.MAIL_PASSWORD;
+import static com.mobiledi.earnitapi.util.MessageConstants.MAIL_USERNAME;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
-
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
@@ -14,11 +11,10 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 
-import static com.mobiledi.earnitapi.util.MessageConstants.*;
-
+@Slf4j
 public class MailUtility {
-    private static Log logger = LogFactory.getLog(MailUtility.class);
 
     public static boolean sendMail(String emailTo, String subject, String body) {
         String smtp = "smtp.superb.net";
@@ -45,10 +41,10 @@ public class MailUtility {
 
             Transport.send(message);
 
-            logger.debug("Mail sent to " + emailTo);
+            log.debug("Mail sent to " + emailTo);
             return true;
         } catch (MessagingException e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             return false;
         }
     }
