@@ -8,12 +8,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.mobiledi.earnitapi.EarnitApiApplication;
 
-@RunWith(SpringRunner.class)
+/*@RunWith(SpringRunner.class)
 @SpringBootTest
-@ContextConfiguration(classes={EarnitApiApplication.class})
+@ContextConfiguration(classes={EarnitApiApplication.class})*/
 public class EarnitApiApplicationTests {
 
-	@Test
+	//@Test
 	public void contextLoads() {
 	}
 
