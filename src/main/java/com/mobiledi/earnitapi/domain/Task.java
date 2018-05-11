@@ -51,7 +51,7 @@ public class Task implements Serializable {
 	private String name;
 
 	@Column(name = "picture_required")
-	private Integer pictureRequired;
+	private Boolean pictureRequired;
 
 	private String status;
 
@@ -129,11 +129,11 @@ public class Task implements Serializable {
 		this.name = name;
 	}
 
-	public Integer getPictureRequired() {
+	public Boolean getPictureRequired() {
 		return this.pictureRequired;
 	}
 
-	public void setPictureRequired(Integer pictureRequired) {
+	public void setPictureRequired(Boolean pictureRequired) {
 		this.pictureRequired = pictureRequired;
 	}
 
