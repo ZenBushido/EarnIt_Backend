@@ -153,6 +153,7 @@ public class TaskController {
 
 		if(task.getRepititionSchedule() != null && task.getRepititionSchedule().getDayTaskStatuses() != null) {
 			task.getRepititionSchedule().getDayTaskStatuses().forEach(dayTaskStatus -> {
+				dayTaskStatus.setRepititionSchedule(persistedTask.getRepititionSchedule());
 				dayTaskStatusRepository.save(dayTaskStatus);
 			});
 		}
