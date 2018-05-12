@@ -14,7 +14,7 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * The persistent class for the repitition_schedule database table.
- * 
+ *
  */
 @Entity
 @Table(name = "repitition_schedule")
@@ -35,6 +35,12 @@ public class RepititionSchedule implements Serializable {
 	private String endTime;
 
 	private String repeat;
+
+	@Column(name = "every_n_repeat")
+	private Integer everyNRepeat;
+
+	@Column(name = "perform_task_on_the_n_day")
+	private String performTaskOnTheNSpecifiedDay;
 
 	@ElementCollection
 	private Set<String> specificDays;// Monday, Tuesday, Wednesday Thursday, Friday, Saturday, Sunday
@@ -107,4 +113,21 @@ public class RepititionSchedule implements Serializable {
 	public void setSpecificDays(Set<String> specificDays) {
 		this.specificDays = specificDays;
 	}
+
+	public Integer getEveryNRepeat() {
+		return everyNRepeat;
+	}
+
+	public void setEveryNRepeat(Integer everyNRepeat) {
+		this.everyNRepeat = everyNRepeat;
+	}
+
+	public String getPerformTaskOnTheNSpecifiedDay() {
+		return performTaskOnTheNSpecifiedDay;
+	}
+
+	public void setPerformTaskOnTheNSpecifiedDay(String performTaskOnTheNSpecifiedDay) {
+		this.performTaskOnTheNSpecifiedDay = performTaskOnTheNSpecifiedDay;
+	}
+
 }
