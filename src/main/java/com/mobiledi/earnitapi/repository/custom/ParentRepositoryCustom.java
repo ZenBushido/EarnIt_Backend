@@ -4,5 +4,6 @@ import com.mobiledi.earnitapi.domain.Parent;
 
 public interface ParentRepositoryCustom {
 	Parent persistParent(Parent parent);
+	Parent updateParent(Parent parent);
 
 }

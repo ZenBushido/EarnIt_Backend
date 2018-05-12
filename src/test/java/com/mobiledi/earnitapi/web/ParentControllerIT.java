@@ -15,7 +15,7 @@ public class ParentControllerIT extends BaseIT {
 
   //@Test
   public void test(){
-    Assert.assertNull(parentRepository.findById(1L).get());
+    Assert.assertNull(parentRepository.findById(1).get());
   }
 
 }
