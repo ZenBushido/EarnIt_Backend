@@ -119,11 +119,22 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 @Configuration
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+	private static final String[] AUTH_WHITELIST = {
+
+			// -- swagger ui
+			"/swagger-resources/**",
+			"/swagger-ui.html",
+			"/v2/api-docs",
+			"/webjars/**"
+	};
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		log.info("Configuring WebSecurity");
 		// http.authorizeRequests().antMatchers("/login").permitAll().anyRequest().fullyAuthenticated().and().httpBasic()
 		// .and().csrf().disable();
+		http.authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll()
+				.antMatchers("/**/*").denyAll();
 		http.authorizeRequests().antMatchers("/login", "/signup/parent", "/hello", "/sendPush/*", "/passwordReminder").permitAll()
 				.antMatchers("/childrens").hasAuthority(AppConstants.USER_PARENT).anyRequest().fullyAuthenticated()
 				.and().httpBasic().and().csrf().disable();
