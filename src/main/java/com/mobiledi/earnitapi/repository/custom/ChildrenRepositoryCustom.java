@@ -7,4 +7,6 @@ public interface ChildrenRepositoryCustom {
 
 	Children findChild(int id);
 
+	Children updateChild(Children children);
+
 }

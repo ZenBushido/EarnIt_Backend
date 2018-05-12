@@ -21,7 +21,7 @@ public class ExceptionHandler {
         .errorCode(ex.getHttpStatus().toString())
         .errorMessage(ex.getMessage()).build();
 
-    return new ResponseEntity(errorResponseDto, HttpStatus.valueOf(ex.getHttpStatus()));
+    return new ResponseEntity(errorResponseDto, HttpStatus.BAD_REQUEST);
 
   }
 

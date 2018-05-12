@@ -4,7 +4,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.mobiledi.earnitapi.domain.Parent;
 
-public interface ParentRepository extends CrudRepository<Parent, Long> {
+public interface ParentRepository extends CrudRepository<Parent, Integer> {
 
-	Parent findParentById(Long id);
+	Parent findParentById(Integer id);
 }

@@ -1,18 +1,24 @@
 package com.mobiledi.earnitapi.web;
 
+import static com.mobiledi.earnitapi.util.MessageConstants.CHILDREN_DELETED_FAILED;
+import static com.mobiledi.earnitapi.util.MessageConstants.CHILDREN_DELETED_FAILED_CODE;
+
+import com.mobiledi.earnitapi.domain.Children;
+import com.mobiledi.earnitapi.domain.Task;
+import com.mobiledi.earnitapi.domain.custom.ApiError;
+import com.mobiledi.earnitapi.domain.custom.Response;
+import com.mobiledi.earnitapi.repository.ChildrenRepository;
+import com.mobiledi.earnitapi.repository.custom.ChildrenRepositoryCustom;
+import com.mobiledi.earnitapi.util.AppConstants;
+import com.mobiledi.earnitapi.util.MessageConstants;
+import com.mobiledi.earnitapi.util.NotificationConstants.NotificationCategory;
+import com.mobiledi.earnitapi.util.PushNotifier;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import com.mobiledi.earnitapi.domain.custom.ApiError;
-import com.mobiledi.earnitapi.domain.custom.Response;
-import com.mobiledi.earnitapi.util.MessageConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +29,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.mobiledi.earnitapi.domain.Children;
-import com.mobiledi.earnitapi.domain.Task;
-import com.mobiledi.earnitapi.repository.ChildrenRepository;
-import com.mobiledi.earnitapi.repository.custom.ChildrenRepositoryCustom;
-import com.mobiledi.earnitapi.util.AppConstants;
-import com.mobiledi.earnitapi.util.AppConstants.ChildAccoutActionType;
-import com.mobiledi.earnitapi.util.NotificationConstants.NotificationCategory;
-import com.mobiledi.earnitapi.util.PushNotifier;
-import com.mobiledi.earnitapi.util.SMSUtility;
-
-import static com.mobiledi.earnitapi.util.MessageConstants.*;
 
 @Slf4j
 @RestController
@@ -85,25 +79,24 @@ public class ChildrenController {
 
 	@RequestMapping(value = "/children", method = RequestMethod.PUT)
 	public ResponseEntity<?> update(@RequestBody Children child) throws JSONException {
-		child.setUpdateDate(new Timestamp(new DateTime().getMillis()));
-		
-		Children lastChildRecord = childrenRepositoryCustom.findChild(child.getId());
-		String lastUpdatedNumber = lastChildRecord.getPhone();
-		Children childObject = childrenRepo.save(child);
-		if(StringUtils.isNotBlank(child.getFcmToken()) && StringUtils.isNotBlank(child.getMessage()))
-			PushNotifier.sendPushNotification(0, child.getFcmToken(), NotificationCategory.MESSAGE_TO_CHILD, child.getMessage());		
-		
-		if(lastChildRecord!= null){
-		log.info("previous phone number is : "+lastUpdatedNumber);
-		log.info("updating phone number to : "+child.getPhone());
-			if(!lastUpdatedNumber.equalsIgnoreCase(child.getPhone()))
-				log.info("Message Sending success? :" + SMSUtility.SendSMS(child, ChildAccoutActionType.ADD));
+
+		doesChildExist(child.getId());
+		child = childrenRepositoryCustom.updateChild(child);
+		if (StringUtils.isNotBlank(child.getFcmToken()) && StringUtils.isNotBlank(child.getMessage())) {
+			PushNotifier
+					.sendPushNotification(0, child.getFcmToken(), NotificationCategory.MESSAGE_TO_CHILD,
+							child.getMessage());
 		}
-//		logger.info("Message Sending success? :" + SMSUtility.SendSMS(child, ChildAccoutActionType.ADD));
-		if (childObject != null)
-			return new ResponseEntity<Children>(child, HttpStatus.ACCEPTED);
-		else
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+
+		return new ResponseEntity<Children>(child, HttpStatus.ACCEPTED);
 
 	}
+
+	private void doesChildExist(Integer id) {
+		Optional<Children> children = childrenRepo.findById(id);
+		if (!children.isPresent()) {
+			throw new ValidationException("Children not found with id : " + id, 400);
+		}
+	}
+
 }
