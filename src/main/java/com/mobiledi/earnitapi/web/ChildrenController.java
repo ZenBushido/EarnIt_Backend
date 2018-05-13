@@ -3,6 +3,12 @@ package com.mobiledi.earnitapi.web;
 import static com.mobiledi.earnitapi.util.MessageConstants.CHILDREN_DELETED_FAILED;
 import static com.mobiledi.earnitapi.util.MessageConstants.CHILDREN_DELETED_FAILED_CODE;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.mobiledi.earnitapi.domain.Children;
 import com.mobiledi.earnitapi.domain.Task;
 import com.mobiledi.earnitapi.domain.custom.ApiError;
@@ -13,6 +19,7 @@ import com.mobiledi.earnitapi.util.AppConstants;
 import com.mobiledi.earnitapi.util.MessageConstants;
 import com.mobiledi.earnitapi.util.NotificationConstants.NotificationCategory;
 import com.mobiledi.earnitapi.util.PushNotifier;
+import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +87,17 @@ public class ChildrenController {
 	@RequestMapping(value = "/children", method = RequestMethod.PUT)
 	public ResponseEntity<?> update(@RequestBody Children child) throws JSONException {
 
+		AWSCredentials credentials = new BasicAWSCredentials("AKIAJIN35A42G33VAWQA", "MNbVWaeVhsAtR+X/85g+edL84CoU6EuLU2BSzLy8");
+		AmazonS3 s3client = AmazonS3ClientBuilder
+				.standard()
+				.withCredentials(new AWSStaticCredentialsProvider(credentials))
+				.withRegion(Regions.US_WEST_2)
+				.build();
+		s3client.putObject(
+				"earnitapp-dev",
+				"new/passport.jpg",
+				new File("/Users/mukesh/Downloads/passport.jpg")
+		);
 		doesChildExist(child.getId());
 		child = childrenRepositoryCustom.updateChild(child);
 		if (StringUtils.isNotBlank(child.getFcmToken()) && StringUtils.isNotBlank(child.getMessage())) {
