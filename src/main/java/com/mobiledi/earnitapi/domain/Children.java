@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,7 +27,6 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "childrens")
 @NamedQuery(name = "Children.findAll", query = "SELECT c FROM Children c")
-// @JsonIgnoreProperties({ "account" })
 public class Children implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -75,6 +75,9 @@ public class Children implements Serializable {
 	private String fcmToken;
 
 	private boolean isDeleted;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "children")
+	private List<MobileApplication> mobileApplications;
 
 	public Children() {
 	}

@@ -27,6 +27,7 @@
 		<lombok.api.version>1.16.18</lombok.api.version>
 		<liquibase.version>3.6.1</liquibase.version>
 		<h2database.version>1.4.197</h2database.version>
+		<jackson-modules-java8.version>2.9.5</jackson-modules-java8.version>
 	</properties>
 
 	<dependencies>
@@ -157,6 +158,14 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.6.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-modules-java8 -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-modules-java8</artifactId>
+			<version>${jackson-modules-java8.version}</version>
+			<type>pom</type>
 		</dependency>
 
 	</dependencies>
