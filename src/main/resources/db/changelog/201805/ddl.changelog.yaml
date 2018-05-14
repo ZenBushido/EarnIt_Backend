@@ -38,3 +38,39 @@ databaseChangeLog:
           constraintName: mobile_application_uk_name_children_id
           schemaName: public
           tableName: mobile_application
+
+    id: create_mobile_application_user_table
+    author: mukesh_kumar
+    changes:
+      - createTable:
+          tableName: mobile_application_usage
+          columns:
+            - column:
+                name: id
+                type: bigint
+            - column:
+                name: start
+                type: TIMESTAMP WITH TIME ZONE
+            - column:
+                name: end
+                type: TIMESTAMP WITH TIME ZONE
+            - column:
+                name: mobile_application_id
+                type: bigint
+      - addPrimaryKey:
+          columnNames: id
+          constraintName: mobile_application_usage_pk
+          schemaName: public
+          tableName: mobile_application_usage
+      - addForeignKeyConstraint:
+          baseColumnNames: id
+          baseTableName: mobile_application_usage
+          constraintName: fk_mobile_application_usage_children
+          deferrable: true
+          referencedColumnNames: id
+          referencedTableName: mobile_application
+      - addUniqueConstraint:
+          columnNames: start, end, mobile_application_id
+          constraintName: mobile_application_usage_uk_start_end_mobile_application_id
+          schemaName: public
+          tableName: mobile_application_usage

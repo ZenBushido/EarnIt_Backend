@@ -1,8 +1,6 @@
 package com.mobiledi.earnitapi.domain;
 
 import java.sql.Timestamp;
-import java.util.List;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,32 +18,24 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name = "mobile_application")
+@Table(name = "mobile_application_usage")
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 @EqualsAndHashCode
 @ToString
-public class MobileApplication {
+public class MobileApplicationUsage {
 
   @Id
-  @SequenceGenerator(name = "MOBILE_APPLICATION_ID_GENERATOR", sequenceName = "mobile_application_id_seq")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MOBILE_APPLICATION_ID_GENERATOR")
+  @SequenceGenerator(name = "MOBILE_APPLICATION_USAGE_ID_GENERATOR", sequenceName = "mobile_application_usage_id_seq")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MOBILE_APPLICATION_USAGE_ID_GENERATOR")
   private Long id;
 
-  private String name;
-
-  @Column(name = "created_date")
-  private Timestamp createdDate;
-
-  @Column(name = "ignored_by_parent")
-  private Boolean ignoredByParent;
+  private Timestamp start;
+  private Timestamp end;
 
   @ManyToOne
-  private Children children;
-
-  @OneToMany(mappedBy = "mobileApplication")
-  private List<MobileApplicationUsage> mobileApplicationUsages;
+  private MobileApplication mobileApplication;
 
 }
