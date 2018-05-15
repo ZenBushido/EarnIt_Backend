@@ -1,7 +1,8 @@
-package com.mobiledi.earnitapi.services;
+package com.mobiledi.earnitapi.services.impl;
 
 import com.mobiledi.earnitapi.domain.Goal;
 import com.mobiledi.earnitapi.domain.Task;
+import com.mobiledi.earnitapi.services.GoalService;
 import com.mobiledi.earnitapi.util.AppConstants;
 import java.math.BigDecimal;
 import lombok.extern.slf4j.Slf4j;

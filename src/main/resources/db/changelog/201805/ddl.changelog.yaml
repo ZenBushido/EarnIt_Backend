@@ -27,18 +27,30 @@ databaseChangeLog:
           schemaName: public
           tableName: mobile_application
       - addForeignKeyConstraint:
-          baseColumnNames: id
+          baseColumnNames: children_id
           baseTableName: mobile_application
-          constraintName: fk_mobile_application_children
+          constraintName: mobile_application_children_fk
           deferrable: true
           referencedColumnNames: id
           referencedTableName: childrens
       - addUniqueConstraint:
-          columnNames: id, children_id
-          constraintName: mobile_application_uk_name_children_id
+          columnNames: name, children_id
+          constraintName: mobile_application_name_children_id_uk
           schemaName: public
           tableName: mobile_application
+      - addDefaultValue:
+          columnName: ignored_by_parent
+          columnDataType: boolean
+          defaultValueBoolean: false
+          tableName: mobile_application
+          schemaName: public
+      - addNotNullConstraint:
+          columnDataType: bigint
+          columnName: children_id
+          tableName: mobile_application
+          schemaName: public
 
+ - changeSet:
     id: create_mobile_application_user_table
     author: mukesh_kumar
     changes:
@@ -49,10 +61,10 @@ databaseChangeLog:
                 name: id
                 type: bigint
             - column:
-                name: start
+                name: start_time
                 type: TIMESTAMP WITH TIME ZONE
             - column:
-                name: end
+                name: end_time
                 type: TIMESTAMP WITH TIME ZONE
             - column:
                 name: mobile_application_id
@@ -63,14 +75,45 @@ databaseChangeLog:
           schemaName: public
           tableName: mobile_application_usage
       - addForeignKeyConstraint:
-          baseColumnNames: id
+          baseColumnNames: mobile_application_id
           baseTableName: mobile_application_usage
-          constraintName: fk_mobile_application_usage_children
+          constraintName: mobile_application_usage_mobile_application_fk
           deferrable: true
           referencedColumnNames: id
           referencedTableName: mobile_application
       - addUniqueConstraint:
-          columnNames: start, end, mobile_application_id
-          constraintName: mobile_application_usage_uk_start_end_mobile_application_id
+          columnNames: start_time, end_time, mobile_application_id
+          constraintName: mobile_application_usage_start_end_mobile_application_id_uk
           schemaName: public
           tableName: mobile_application_usage
+      - addNotNullConstraint:
+          columnDataType: bigint
+          columnName: mobile_application_id
+          tableName: mobile_application_usage
+          schemaName: public
+
+ - changeSet:
+    id: create_mobile_application_is_seq
+    author: mukesh_kumar
+    changes:
+      - createSequence:
+          cycle: false
+          incrementBy: 1
+          maxValue: 99999999999
+          minValue: 1
+          schemaName: public
+          sequenceName: mobile_application_id_seq
+          startValue: 1
+
+ - changeSet:
+    id: create_mobile_application_usage_is_seq
+    author: mukesh_kumar
+    changes:
+      - createSequence:
+          cycle: false
+          incrementBy: 1
+          maxValue: 99999999999
+          minValue: 1
+          schemaName: public
+          sequenceName: mobile_application_usage_id_seq
+          startValue: 1

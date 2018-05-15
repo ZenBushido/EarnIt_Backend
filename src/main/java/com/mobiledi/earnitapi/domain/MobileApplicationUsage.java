@@ -1,12 +1,13 @@
 package com.mobiledi.earnitapi.domain;
 
 import java.sql.Timestamp;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.AccessLevel;
@@ -32,10 +33,14 @@ public class MobileApplicationUsage {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MOBILE_APPLICATION_USAGE_ID_GENERATOR")
   private Long id;
 
-  private Timestamp start;
-  private Timestamp end;
+  @Column(name = "start_time")
+  private Timestamp startTime;
 
-  @ManyToOne
+  @Column(name = "end_time")
+  private Timestamp endTime;
+
+  @JoinColumn(name = "mobile_application_id")
+  @ManyToOne(targetEntity = MobileApplication.class)
   private MobileApplication mobileApplication;
 
 }
