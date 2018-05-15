@@ -100,10 +100,10 @@ databaseChangeLog:
           cycle: false
           incrementBy: 1
           maxValue: 99999999999
-          minValue: 1
+          minValue: 1000
           schemaName: public
           sequenceName: mobile_application_id_seq
-          startValue: 1
+          startValue: 1000
 
  - changeSet:
     id: create_mobile_application_usage_is_seq
@@ -111,9 +111,9 @@ databaseChangeLog:
     changes:
       - createSequence:
           cycle: false
-          incrementBy: 1
+          incrementBy: 50
           maxValue: 99999999999
-          minValue: 1
+          minValue: 1000
           schemaName: public
           sequenceName: mobile_application_usage_id_seq
-          startValue: 1
+          startValue: 1000
