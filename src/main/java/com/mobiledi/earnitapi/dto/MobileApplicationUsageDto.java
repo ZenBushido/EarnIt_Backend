@@ -1,6 +1,8 @@
 package com.mobiledi.earnitapi.dto;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +19,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class MobileApplicationUsageDto {
 
-  private final Instant start;
-  private final Instant end;
+  private final String startDateTimeWithZone;
+  private final String endDateTimeWithZone;
 
 }

@@ -8,7 +8,9 @@ import com.mobiledi.earnitapi.repository.ChildrenRepository;
 import com.mobiledi.earnitapi.repository.MobileApplicationRepository;
 import com.mobiledi.earnitapi.services.MobileApplicationService;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
@@ -39,7 +41,8 @@ public class MobileApplicationServiceImpl implements MobileApplicationService {
         .mobileApplicationUsages(mobileApplicationUsages)
         .build();
 
-    mobileApplicationUsages.forEach(mobileApplicationUsage -> mobileApplicationUsage.setMobileApplication(mobileApplication));
+    mobileApplicationUsages.forEach(
+        mobileApplicationUsage -> mobileApplicationUsage.setMobileApplication(mobileApplication));
 
     mobileApplicationRepository.save(mobileApplication);
   }
@@ -54,7 +57,8 @@ public class MobileApplicationServiceImpl implements MobileApplicationService {
         .findByNameAndChildrenId(mobileApplicationRequestDto.getName(), children.getId()).get(0);
     mobileApplication.getMobileApplicationUsages().addAll(mobileApplicationUsages);
 
-    mobileApplicationUsages.forEach(mobileApplicationUsage -> mobileApplicationUsage.setMobileApplication(mobileApplication));
+    mobileApplicationUsages.forEach(
+        mobileApplicationUsage -> mobileApplicationUsage.setMobileApplication(mobileApplication));
 
     mobileApplicationRepository.save(mobileApplication);
   }
@@ -66,12 +70,20 @@ public class MobileApplicationServiceImpl implements MobileApplicationService {
   private List<MobileApplicationUsage> convertToMobileApplicationUsageList(
       MobileApplicationRequestDto mobileApplicationRequestDto) {
     return mobileApplicationRequestDto.getUsage()
-        .stream().map(mobileApplicationUsageDto ->
-            MobileApplicationUsage.builder()
-                .endTime(Timestamp.from(mobileApplicationUsageDto.getEnd()))
-                .startTime(Timestamp.from(mobileApplicationUsageDto.getStart()))
-                .build()
-        ).collect(Collectors.toList());
+        .stream().map(mobileApplicationUsageDto -> {
+          OffsetDateTime start = OffsetDateTime
+              .parse(mobileApplicationUsageDto.getStartDateTimeWithZone());
+          OffsetDateTime end = OffsetDateTime
+              .parse(mobileApplicationUsageDto.getEndDateTimeWithZone());
+          return MobileApplicationUsage.builder()
+              .endTime(Timestamp.from(start.toInstant()))
+              .startTime(Timestamp.from(end.toInstant()))
+              .startWithZone(mobileApplicationUsageDto.getStartDateTimeWithZone())
+              .endWithZone(mobileApplicationUsageDto.getEndDateTimeWithZone())
+              .durationInMinute(
+                  Duration.between(start.toLocalTime(), end.toLocalTime()).toMinutes())
+              .build();
+        }).collect(Collectors.toList());
   }
 
 }

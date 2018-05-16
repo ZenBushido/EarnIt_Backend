@@ -39,6 +39,15 @@ public class MobileApplicationUsage {
   @Column(name = "end_time")
   private Timestamp endTime;
 
+  @Column(name = "start_time_str")
+  private String startWithZone;
+
+  @Column(name = "end_time_str")
+  private String endWithZone;
+
+  @Column(name = "duration_in_minute")
+  private Long durationInMinute;
+
   @JoinColumn(name = "mobile_application_id")
   @ManyToOne(targetEntity = MobileApplication.class)
   private MobileApplication mobileApplication;

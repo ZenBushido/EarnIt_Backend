@@ -67,6 +67,15 @@ databaseChangeLog:
                 name: end_time
                 type: TIMESTAMP WITH TIME ZONE
             - column:
+                name: start_time_str
+                type: varchar(50)
+            - column:
+                name: end_time_str
+                type: varchar(50)
+            - column:
+                name: duration_in_minute
+                type: bigint
+            - column:
                 name: mobile_application_id
                 type: bigint
       - addPrimaryKey:
