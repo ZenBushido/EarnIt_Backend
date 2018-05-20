@@ -33,8 +33,7 @@ import lombok.ToString;
 public class MobileApplication {
 
   @Id
-  @SequenceGenerator(name = "MOBILE_APPLICATION_ID_GENERATOR", sequenceName = "mobile_application_id_seq")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MOBILE_APPLICATION_ID_GENERATOR")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private String name;

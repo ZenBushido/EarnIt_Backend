@@ -5,15 +5,15 @@ import java.time.Instant;
 //To encapsulate any type of validation error.
 public class ValidationException extends RuntimeException {
 
-  final private Integer httpStatus;
+  final private Integer errorCode;
 
-  ValidationException(String message, int httpStatus) {
+  ValidationException(String message, int errorCode) {
     super(message);
-    this.httpStatus = httpStatus;
+    this.errorCode = errorCode;
   }
 
-  public Integer getHttpStatus() {
-    return httpStatus;
+  public Integer getErrorCode() {
+    return errorCode;
   }
 
   public static void main(String[] args) {

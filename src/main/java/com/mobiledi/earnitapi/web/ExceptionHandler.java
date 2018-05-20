@@ -18,7 +18,7 @@ public class ExceptionHandler {
   public ResponseEntity<Object> validationException(ValidationException ex) {
     log.error("Validation info : " + ex.getMessage());
     ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
-        .errorCode(ex.getHttpStatus().toString())
+        .errorCode(ex.getErrorCode().toString())
         .errorMessage(ex.getMessage()).build();
 
     return new ResponseEntity(errorResponseDto, HttpStatus.BAD_REQUEST);

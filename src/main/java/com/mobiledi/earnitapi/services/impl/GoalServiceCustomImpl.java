@@ -2,7 +2,7 @@ package com.mobiledi.earnitapi.services.impl;
 
 import com.mobiledi.earnitapi.domain.Goal;
 import com.mobiledi.earnitapi.domain.Task;
-import com.mobiledi.earnitapi.services.GoalService;
+import com.mobiledi.earnitapi.services.GoalServiceCustom;
 import com.mobiledi.earnitapi.util.AppConstants;
 import java.math.BigDecimal;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class GoalServiceImpl implements GoalService {
+public class GoalServiceCustomImpl implements GoalServiceCustom {
 
   @Override
   public boolean checkIfGoalReached(Goal goal) {

@@ -9,6 +9,7 @@ databaseChangeLog:
             - column:
                 name: id
                 type: bigint
+                autoIncrement: true
             - column:
                 name: name
                 type: varchar(1000)
@@ -38,12 +39,6 @@ databaseChangeLog:
           constraintName: mobile_application_name_children_id_uk
           schemaName: public
           tableName: mobile_application
-      - addDefaultValue:
-          columnName: ignored_by_parent
-          columnDataType: boolean
-          defaultValueBoolean: false
-          tableName: mobile_application
-          schemaName: public
       - addNotNullConstraint:
           columnDataType: bigint
           columnName: children_id
@@ -60,6 +55,7 @@ databaseChangeLog:
             - column:
                 name: id
                 type: bigint
+                autoIncrement: true
             - column:
                 name: start_time
                 type: TIMESTAMP WITH TIME ZONE
@@ -100,29 +96,3 @@ databaseChangeLog:
           columnName: mobile_application_id
           tableName: mobile_application_usage
           schemaName: public
-
- - changeSet:
-    id: create_mobile_application_is_seq
-    author: mukesh_kumar
-    changes:
-      - createSequence:
-          cycle: false
-          incrementBy: 1
-          maxValue: 99999999999
-          minValue: 1000
-          schemaName: public
-          sequenceName: mobile_application_id_seq
-          startValue: 1000
-
- - changeSet:
-    id: create_mobile_application_usage_is_seq
-    author: mukesh_kumar
-    changes:
-      - createSequence:
-          cycle: false
-          incrementBy: 50
-          maxValue: 99999999999
-          minValue: 1000
-          schemaName: public
-          sequenceName: mobile_application_usage_id_seq
-          startValue: 1000

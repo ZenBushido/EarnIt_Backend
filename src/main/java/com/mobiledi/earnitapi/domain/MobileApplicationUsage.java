@@ -29,8 +29,7 @@ import lombok.ToString;
 public class MobileApplicationUsage {
 
   @Id
-  @SequenceGenerator(name = "MOBILE_APPLICATION_USAGE_ID_GENERATOR", sequenceName = "mobile_application_usage_id_seq")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MOBILE_APPLICATION_USAGE_ID_GENERATOR")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(name = "start_time")

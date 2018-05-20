@@ -9,5 +9,7 @@ public interface MobileApplicationService {
 
   void update(MobileApplicationRequestDto mobileApplicationRequestDto, Children children);
 
-  boolean doesApplicationExist(String name, Children children);
+  boolean doesApplicationExist(String name, Integer childrenId);
+
+  void markTheAppIgnored(String name, Integer childrenId);
 }

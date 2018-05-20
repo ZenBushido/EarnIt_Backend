@@ -17,7 +17,7 @@ import com.mobiledi.earnitapi.repository.TaskCommentRepository;
 import com.mobiledi.earnitapi.repository.TasksRepository;
 import com.mobiledi.earnitapi.repository.custom.ChildrenRepositoryCustom;
 import com.mobiledi.earnitapi.repository.custom.TaskRepositoryCustom;
-import com.mobiledi.earnitapi.services.GoalService;
+import com.mobiledi.earnitapi.services.GoalServiceCustom;
 import com.mobiledi.earnitapi.util.AppConstants;
 import com.mobiledi.earnitapi.util.NotificationConstants.NotificationCategory;
 import com.mobiledi.earnitapi.util.PushNotifier;
@@ -66,11 +66,11 @@ public class TaskController {
 	EntityManager entityManager;
 
 	@Autowired
-	private GoalService goalService;
+	private GoalServiceCustom goalServiceCustom;
 
 	@RequestMapping(value = "/tasks", method = RequestMethod.GET)
 	public List<Task> findAllRepeatTAsk() {
-		log.info("fetchign repeat task list ");
+		log.info("fetching repeat task list ");
 
 		List<Task> tasks = taskRepoCustom.fetchRepeatTask();
 		return tasks;
@@ -188,7 +188,7 @@ public class TaskController {
 					PushNotifier.sendPushNotification(0, notifyChild.getFcmToken(), NotificationCategory.TASK_CLOSED,
 							task.getName());
 					// CHECK IF THE GOAL HAS BEEN COMPLETED
-					boolean isGoalReached = goalService.checkIfGoalReached(taskObject.getGoal());
+					boolean isGoalReached = goalServiceCustom.checkIfGoalReached(taskObject.getGoal());
 					if (isGoalReached) {
 						PushNotifier.sendPushNotification(0, notifyChild.getFcmToken(),
 								NotificationCategory.GOAL_REACHED, task.getName());

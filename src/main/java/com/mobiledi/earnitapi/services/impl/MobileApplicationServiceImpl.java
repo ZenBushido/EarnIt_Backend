@@ -39,6 +39,7 @@ public class MobileApplicationServiceImpl implements MobileApplicationService {
         .children(childrenRepository.findById(children.getId()).get())
         .name(mobileApplicationRequestDto.getName())
         .mobileApplicationUsages(mobileApplicationUsages)
+        .ignoredByParent(false)
         .build();
 
     mobileApplicationUsages.forEach(
@@ -63,8 +64,16 @@ public class MobileApplicationServiceImpl implements MobileApplicationService {
     mobileApplicationRepository.save(mobileApplication);
   }
 
-  public boolean doesApplicationExist(String name, Children children) {
-    return mobileApplicationRepository.countByNameAndChildrenId(name, children.getId()) > 0;
+  public boolean doesApplicationExist(String name, Integer childrenId) {
+    return mobileApplicationRepository.countByNameAndChildrenId(name, childrenId) > 0;
+  }
+
+  @Override
+  public void markTheAppIgnored(String name, Integer childrenId) {
+    MobileApplication mobileApplication = mobileApplicationRepository
+        .findByNameAndChildrenId(name, childrenId).get(0);
+    mobileApplication.setIgnoredByParent(true);
+    mobileApplicationRepository.save(mobileApplication);
   }
 
   private List<MobileApplicationUsage> convertToMobileApplicationUsageList(
