@@ -6,11 +6,13 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -26,7 +28,6 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "childrens")
 @NamedQuery(name = "Children.findAll", query = "SELECT c FROM Children c")
-// @JsonIgnoreProperties({ "account" })
 public class Children implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -74,7 +75,10 @@ public class Children implements Serializable {
 	@Column(name = "fcm_token")
 	private String fcmToken;
 
-	private boolean isDeleted;
+	private Boolean isDeleted;
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "children", targetEntity = MobileApplication.class)
+	private List<MobileApplication> mobileApplications;
 
 	public Children() {
 	}
@@ -205,11 +209,20 @@ public class Children implements Serializable {
 		this.fcmToken = fcmToken;
 	}
 
-	public boolean isDeleted() {
+	public Boolean isDeleted() {
 		return isDeleted;
 	}
 
-	public void setDeleted(boolean deleted) {
+	public void setDeleted(Boolean deleted) {
 		isDeleted = deleted;
+	}
+
+	public List<MobileApplication> getMobileApplications() {
+		return mobileApplications;
+	}
+
+	public void setMobileApplications(
+			List<MobileApplication> mobileApplications) {
+		this.mobileApplications = mobileApplications;
 	}
 }
