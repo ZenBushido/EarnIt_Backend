@@ -102,7 +102,7 @@ databaseChangeLog:
     author: mukesh_kumar
     changes:
     - sql:
-        comment: Gave permission to mobile app tables
+        comment: Gave permission to mobile app SEQUENCE
         sql: GRANT SELECT, UPDATE ON SEQUENCE mobile_application_id_seq, mobile_application_usage_id_seq to earnituser;
 
  - changeSet:
