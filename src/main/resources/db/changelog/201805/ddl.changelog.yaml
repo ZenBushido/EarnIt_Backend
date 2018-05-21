@@ -96,3 +96,19 @@ databaseChangeLog:
           columnName: mobile_application_id
           tableName: mobile_application_usage
           schemaName: public
+
+ - changeSet:
+    id: give_permission_to_earnituser_for_mobile_app_sequences
+    author: mukesh_kumar
+    changes:
+    - sql:
+        comment: Gave permission to mobile app tables
+        sql: GRANT SELECT, UPDATE ON SEQUENCE mobile_application_id_seq, mobile_application_usage_id_seq to earnituser;
+
+ - changeSet:
+    id: give_permission_to_earnituser_for_mobile_app_tables
+    author: mukesh_kumar
+    changes:
+    - sql:
+        comment: Gave permission to mobile app tables
+        sql: GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE mobile_application, mobile_application_usage to earnituser;

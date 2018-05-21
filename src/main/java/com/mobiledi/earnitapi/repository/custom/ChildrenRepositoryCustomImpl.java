@@ -28,6 +28,7 @@ public class ChildrenRepositoryCustomImpl implements ChildrenRepositoryCustom {
 	@Override
 	public Children persistChild(Children child) {
 		child.setCreateDate(new Timestamp(new DateTime().getMillis()));
+		child.setDeleted(false);
 		entityManager.persist(child);
 		log.info("Message Sending success? :" + SMSUtility.SendSMS(child, ChildAccoutActionType.UPDATE));
 		return child;

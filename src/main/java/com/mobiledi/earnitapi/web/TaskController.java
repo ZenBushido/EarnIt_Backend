@@ -87,7 +87,7 @@ public class TaskController {
 
 		task.setCreateDate(new Timestamp(new DateTime().getMillis()));
 		task.setStatus(AppConstants.TASK_CREATED);
-
+		task.setDeleted(false);
 		Task taskObject = taskRepo.save(task);
 		sendPushNotification(taskObject);
 
@@ -175,7 +175,6 @@ public class TaskController {
 		if (Objects.nonNull(task.getDueDate())) {
 			persistedTask.setDueDate(task.getDueDate());
 		}
-
 
 		Task taskObject = taskRepo.save(persistedTask);
 		Children notifyChild = taskObject.getChildren();
