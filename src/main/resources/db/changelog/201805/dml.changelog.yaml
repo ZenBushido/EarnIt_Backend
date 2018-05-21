@@ -1,0 +1,24 @@
+databaseChangeLog:
+ - changeSet:
+    id: update_delete_column_of_children_table
+    author: mukesh_kumar
+    changes:
+    - sql:
+        comment: Update the children deleted column to false for null values.
+        sql: update childrens set is_deleted=false where is_deleted is null;
+
+ - changeSet:
+    id: update_delete_column_of_tasks
+    author: mukesh_kumar
+    changes:
+    - sql:
+        comment: Update the tasks deleted column to false for null values.
+        sql: update tasks set is_deleted=false where is_deleted is null;
+
+ - changeSet:
+    id: update_delete_column_of_goal
+    author: mukesh_kumar
+    changes:
+    - sql:
+        comment: Update the goals deleted column to false for null values.
+        sql: update goals set is_deleted=false where is_deleted is null;

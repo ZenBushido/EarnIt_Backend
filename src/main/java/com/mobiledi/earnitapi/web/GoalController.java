@@ -53,7 +53,7 @@ public class GoalController {
 	public ResponseEntity<?> save(@RequestBody Goal goal) throws JSONException {
 
 		goal.setCreateDate(new Timestamp(new DateTime().getMillis()));
-
+		goal.setDeleted(false);
 		Goal goalObject = goalRepo.save(goal);
 		if (goalObject != null) {
 			return new ResponseEntity<>(goalObject, HttpStatus.CREATED);
