@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,9 @@ public class ChildrenRepositoryCustomImpl implements ChildrenRepositoryCustom {
 
 	@PersistenceContext
 	EntityManager entityManager;
+
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	@Transactional
 	@Override
@@ -82,7 +87,7 @@ public class ChildrenRepositoryCustomImpl implements ChildrenRepositoryCustom {
 		}
 
 		if (StringUtils.isNotBlank(child.getPassword())) {
-			lastChildRecord.setPassword(child.getPassword());
+			lastChildRecord.setPassword(passwordEncoder.encode(child.getPassword()));
 		}
 
 		if (StringUtils.isNotBlank(child.getPhone())) {
