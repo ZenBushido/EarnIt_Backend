@@ -1,0 +1,22 @@
+databaseChangeLog:
+ - changeSet:
+    id: is_password_encrypted_parents
+    author: mukesh_kumar
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: is_password_encrypted
+            type: boolean
+        tableName: parents
+
+ - changeSet:
+    id: is_password_encrypted_childrens
+    author: mukesh_kumar
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: is_password_encrypted
+            type: boolean
+        tableName: childrens

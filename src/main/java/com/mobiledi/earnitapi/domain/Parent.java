@@ -2,6 +2,7 @@ package com.mobiledi.earnitapi.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -23,7 +24,7 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "parents")
 @NamedQuery(name = "Parent.findAll", query = "SELECT p FROM Parent p")
-// @JsonIgnoreProperties({ "account" })
+@JsonIgnoreProperties({ "isPasswordEncrypted" })
 public class Parent implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -63,6 +64,9 @@ public class Parent implements Serializable {
 	// bi-directional many-to-one association to Account
 	@ManyToOne
 	private Account account;
+
+	@Column(name = "is_password_encrypted")
+	Boolean isPasswordEncrypted;
 
 	public Parent() {
 	}
@@ -161,6 +165,14 @@ public class Parent implements Serializable {
 
 	public void setFcmToken(String fcmToken) {
 		this.fcmToken = fcmToken;
+	}
+
+	public Boolean getPasswordEncrypted() {
+		return isPasswordEncrypted;
+	}
+
+	public void setPasswordEncrypted(Boolean passwordEncrypted) {
+		isPasswordEncrypted = passwordEncrypted;
 	}
 
 }

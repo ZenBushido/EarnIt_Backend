@@ -10,4 +10,5 @@ public interface ChildrenRepository extends CrudRepository<Children, Integer> {
 
 	List<Children> findChildrenByAccountIdOrderByFirstNameAsc(int id);
 	List<Children> findChildrenByAccountIdAndIsDeletedOrderByFirstNameAsc(int id, boolean isDeleted);
+	List<Children> findChildrenByIsPasswordEncryptedIsNull();
 }

@@ -17,6 +17,8 @@ import com.mobiledi.earnitapi.domain.custom.ApiError;
 import com.mobiledi.earnitapi.domain.custom.LoginDomain;
 import com.mobiledi.earnitapi.domain.custom.Response;
 import com.mobiledi.earnitapi.repository.AccountRepository;
+import com.mobiledi.earnitapi.repository.ChildrenRepository;
+import com.mobiledi.earnitapi.repository.ParentRepository;
 import com.mobiledi.earnitapi.repository.custom.ChildrenRepositoryCustom;
 import com.mobiledi.earnitapi.repository.custom.ParentRepositoryCustom;
 import com.mobiledi.earnitapi.util.AppConstants;
@@ -26,7 +28,10 @@ import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -45,9 +50,36 @@ public class AccountController {
 	@Autowired
 	ChildrenRepositoryCustom childRepo;
 
+	@Autowired
+	ChildrenRepository childrenRepository;
+
+	@Autowired
+	ParentRepository parentRepository;
+
+	@Autowired
+	PasswordEncoder passwordEncoder;
+
 	@RequestMapping("/account/{id}")
 	public Account findById(@PathVariable int id) {
 		return accountRepo.findById(id);
+	}
+
+	@PutMapping(value = "/encryptpassword")
+	public String encryptpassword(){
+
+		childrenRepository.findChildrenByIsPasswordEncryptedIsNull().forEach(children -> {
+			children.setPasswordEncrypted(true);
+			children.setPassword(passwordEncoder.encode(children.getPassword()));
+			childrenRepository.save(children);
+		});
+
+		parentRepository.findParentByIsPasswordEncryptedIsNull().forEach(parent -> {
+			parent.setPasswordEncrypted(true);
+			parent.setPassword(passwordEncoder.encode(parent.getPassword()));
+			parentRepository.save(parent);
+		});
+
+		return "ok";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -108,6 +140,8 @@ public class AccountController {
 
 		boolean userExists = checkIfUserExists(parent.getEmail());
 		if (!userExists) {
+			parent.setPassword(passwordEncoder.encode(parent.getPassword()));
+			parent.setPasswordEncrypted(true);
 			Parent savedParent = parentRepo.persistParent(parent);
 			if (savedParent != null) {
 				savedParent.setUserType(AppConstants.USER_PARENT);
@@ -130,7 +164,8 @@ public class AccountController {
 
 		boolean userExists = checkIfUserExists(child.getEmail());
 		if (!userExists) {
-
+			child.setPassword(passwordEncoder.encode(child.getPassword()));
+			child.setPasswordEncrypted(true);
 			Children savedChild = childRepo.persistChild(child);
 			if (savedChild != null) {
 				savedChild.setUserType(AppConstants.USER_CHILD);

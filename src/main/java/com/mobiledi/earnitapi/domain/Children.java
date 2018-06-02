@@ -2,6 +2,7 @@ package com.mobiledi.earnitapi.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
@@ -28,6 +29,7 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "childrens")
 @NamedQuery(name = "Children.findAll", query = "SELECT c FROM Children c")
+@JsonIgnoreProperties({ "isPasswordEncrypted" })
 public class Children implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -76,6 +78,9 @@ public class Children implements Serializable {
 	private String fcmToken;
 
 	private Boolean isDeleted;
+
+	@Column(name = "is_password_encrypted")
+	private Boolean isPasswordEncrypted;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "children", targetEntity = MobileApplication.class)
 	private List<MobileApplication> mobileApplications;
@@ -224,5 +229,13 @@ public class Children implements Serializable {
 	public void setMobileApplications(
 			List<MobileApplication> mobileApplications) {
 		this.mobileApplications = mobileApplications;
+	}
+
+	public Boolean getPasswordEncrypted() {
+		return isPasswordEncrypted;
+	}
+
+	public void setPasswordEncrypted(Boolean passwordEncrypted) {
+		isPasswordEncrypted = passwordEncrypted;
 	}
 }
