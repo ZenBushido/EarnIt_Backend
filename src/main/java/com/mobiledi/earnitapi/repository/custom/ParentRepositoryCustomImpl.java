@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,9 @@ public class ParentRepositoryCustomImpl implements ParentRepositoryCustom {
 
 	@Autowired
 	ParentRepository parentRepository;
+
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	@Transactional
 	@Override
@@ -70,7 +74,7 @@ public class ParentRepositoryCustomImpl implements ParentRepositoryCustom {
 		}
 
 		if (StringUtils.isNotBlank(parent.getPassword())) {
-			lastParentRecord.setPassword(parent.getPassword());
+			lastParentRecord.setPassword(passwordEncoder.encode(parent.getPassword()));
 		}
 
 		if (StringUtils.isNotBlank(parent.getPhone())) {
