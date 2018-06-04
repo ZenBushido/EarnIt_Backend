@@ -29,7 +29,7 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "childrens")
 @NamedQuery(name = "Children.findAll", query = "SELECT c FROM Children c")
-@JsonIgnoreProperties({ "isPasswordEncrypted" })
+@JsonIgnoreProperties({ "isPasswordEncrypted", "mobileApplications" })
 public class Children implements Serializable {
 	private static final long serialVersionUID = 1L;
 
