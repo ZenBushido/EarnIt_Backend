@@ -22,6 +22,7 @@ import com.mobiledi.earnitapi.repository.ParentRepository;
 import com.mobiledi.earnitapi.repository.custom.ChildrenRepositoryCustom;
 import com.mobiledi.earnitapi.repository.custom.ParentRepositoryCustom;
 import com.mobiledi.earnitapi.util.AppConstants;
+import com.mobiledi.earnitapi.util.AuthenticatedUserProvider;
 import com.mobiledi.earnitapi.util.MailUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
@@ -59,6 +60,9 @@ public class AccountController {
 	@Autowired
 	PasswordEncoder passwordEncoder;
 
+	@Autowired
+	AuthenticatedUserProvider authenticatedUserProvider;
+
 	@RequestMapping("/account/{id}")
 	public Account findById(@PathVariable int id) {
 		return accountRepo.findById(id);
@@ -82,21 +86,22 @@ public class AccountController {
 		return "ok";
 	}
 
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<?> login(@RequestBody LoginDomain loginDomain) throws JSONException {
-		Parent parent = accountRepo.findParentbyemailandpassword(loginDomain.getEmail(), loginDomain.getPassword());
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public ResponseEntity<?> login() {
+
+		String email = authenticatedUserProvider.getLoggedInUserEmail();
+		Parent parent = accountRepo.findParentByEmail(email);
 		if (parent != null) {
 			parent.setUserType(AppConstants.USER_PARENT);
 			return new ResponseEntity<Parent>(parent, HttpStatus.OK);
 		} else {
-			Children child = accountRepo.findChildbyemailandpassword(loginDomain.getEmail(), loginDomain.getPassword());
+			Children child = accountRepo.findChildByEmail(email);
 			if (child != null) {
 				child.setUserType(AppConstants.USER_CHILD);
 				return new ResponseEntity<Children>(child, HttpStatus.OK);
 			}
 		}
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
 	}
 
 	@RequestMapping(value = "/passwordReminder", method = RequestMethod.POST)

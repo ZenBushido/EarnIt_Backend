@@ -37,4 +37,10 @@ public class AuthenticatedUserProvider {
     return parent;
   }
 
+  public String getLoggedInUserEmail(){
+    User user = (User) SecurityContextHolder.getContext().getAuthentication()
+        .getPrincipal();
+    return user.getUsername();
+  }
+
 }
