@@ -29,6 +29,22 @@ public class MobileApplicationServiceImpl implements MobileApplicationService {
 
   @Transactional
   @SneakyThrows
+  public void persist(List<MobileApplicationRequestDto> mobileApplicationRequestList,
+      Children children) {
+    mobileApplicationRequestList.forEach(mobileApplicationRequestDto -> {
+      boolean doesApplicationExist = doesApplicationExist(mobileApplicationRequestDto.getName(),
+          children.getId());
+      if (doesApplicationExist) {
+        update(mobileApplicationRequestDto, children);
+      } else {
+        persist(mobileApplicationRequestDto, children);
+      }
+    });
+
+  }
+
+  @Transactional
+  @SneakyThrows
   public void persist(MobileApplicationRequestDto mobileApplicationRequestDto, Children children) {
 
     List<MobileApplicationUsage> mobileApplicationUsages = convertToMobileApplicationUsageList(
