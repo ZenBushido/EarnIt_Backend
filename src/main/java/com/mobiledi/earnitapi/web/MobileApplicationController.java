@@ -63,16 +63,10 @@ public class MobileApplicationController {
 
   @PutMapping
   @SneakyThrows
-  public String createMobile(@RequestBody MobileApplicationRequestDto requestDto) {
-    validate(requestDto);
+  public String createMobile(@RequestBody List<MobileApplicationRequestDto> requestDtos) {
+    requestDtos.forEach(this::validate);
     Children children = authenticatedUserProvider.getLoggedInChild();
-    boolean doesApplicationExist = mobileApplicationService
-        .doesApplicationExist(requestDto.getName(), children.getId());
-    if (doesApplicationExist) {
-      mobileApplicationService.update(requestDto, children);
-    } else {
-      mobileApplicationService.persist(requestDto, children);
-    }
+    mobileApplicationService.persist(requestDtos, children);
     return OK;
   }
 
