@@ -6,6 +6,7 @@ import com.mobiledi.earnitapi.domain.MobileApplicationUsage;
 import com.mobiledi.earnitapi.dto.MobileApplicationRequestDto;
 import com.mobiledi.earnitapi.repository.ChildrenRepository;
 import com.mobiledi.earnitapi.repository.MobileApplicationRepository;
+import com.mobiledi.earnitapi.repository.MobileApplicationUsageRepository;
 import com.mobiledi.earnitapi.services.MobileApplicationService;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -23,6 +24,9 @@ public class MobileApplicationServiceImpl implements MobileApplicationService {
 
   @Autowired
   private MobileApplicationRepository mobileApplicationRepository;
+
+  @Autowired
+  private MobileApplicationUsageRepository mobileApplicationUsageRepository;
 
   @Autowired
   private ChildrenRepository childrenRepository;
@@ -65,10 +69,30 @@ public class MobileApplicationServiceImpl implements MobileApplicationService {
   }
 
   @Transactional
+  private boolean doesAppUsageExist(String appName, Integer childId, Timestamp startTime,
+      Timestamp endTime) {
+    return mobileApplicationUsageRepository
+        .countByMobileApplicationNameAndMobileApplicationChildrenIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(
+            appName,
+            childId,
+            startTime,
+            endTime
+        ) == 0;
+  }
+
+  @Transactional
   @SneakyThrows
   public void update(MobileApplicationRequestDto mobileApplicationRequestDto, Children children) {
     List<MobileApplicationUsage> mobileApplicationUsages = convertToMobileApplicationUsageList(
         mobileApplicationRequestDto);
+
+    mobileApplicationUsages = mobileApplicationUsages.stream()
+        .filter(mobileApplicationUsage -> doesAppUsageExist(
+            mobileApplicationRequestDto.getName(),
+            children.getId(),
+            mobileApplicationUsage.getStartTime(),
+            mobileApplicationUsage.getEndTime()
+        )).collect(Collectors.toList());
 
     MobileApplication mobileApplication = mobileApplicationRepository
         .findByNameAndChildrenId(mobileApplicationRequestDto.getName(), children.getId()).get(0);

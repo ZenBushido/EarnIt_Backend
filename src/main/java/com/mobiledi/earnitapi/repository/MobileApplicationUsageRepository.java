@@ -14,4 +14,7 @@ public interface MobileApplicationUsageRepository extends
   List<MobileApplicationUsage> findByMobileApplicationIgnoredByParentAndMobileApplicationNameAndMobileApplicationChildrenIdAndStartTimeGreaterThanAndStartTimeLessThan(
       Boolean ignoreByParent, String name, Integer childId, Timestamp start, Timestamp end);
 
+  Long countByMobileApplicationNameAndMobileApplicationChildrenIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(
+      String name, Integer childId, Timestamp start, Timestamp end);
+
 }

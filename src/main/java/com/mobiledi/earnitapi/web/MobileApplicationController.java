@@ -19,10 +19,12 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +66,7 @@ public class MobileApplicationController {
   @PutMapping
   @SneakyThrows
   public String createMobile(@RequestBody List<MobileApplicationRequestDto> requestDtos) {
-    requestDtos.forEach(this::validate);
+    requestDtos = requestDtos.stream().map(this::validate).collect(Collectors.toList());
     Children children = authenticatedUserProvider.getLoggedInChild();
     mobileApplicationService.persist(requestDtos, children);
     return OK;
@@ -142,12 +144,14 @@ public class MobileApplicationController {
             Collectors.toList());
   }
 
-  private void validate(MobileApplicationRequestDto requestDto) {
+  private MobileApplicationRequestDto validate(MobileApplicationRequestDto requestDto) {
     if (Objects.isNull(requestDto.getName())) {
       throw new ValidationException("app name cannot be null", 400);
     }
 
     if (Objects.nonNull(requestDto.getUsage())) {
+      //To keep unique usage only.
+      Set<MobileApplicationUsageDto> mobileApplicationUsageDtoSet = new HashSet<>(requestDto.getUsage());
       requestDto.getUsage().stream().forEach(mobileApplicationUsageDto -> {
         if (Objects.isNull(mobileApplicationUsageDto.getEndDateTimeWithZone()) || Objects
             .isNull(mobileApplicationUsageDto.getEndDateTimeWithZone())) {
@@ -161,7 +165,9 @@ public class MobileApplicationController {
           }
         }
       });
+      return requestDto.toBuilder().usage(new ArrayList<>(mobileApplicationUsageDtoSet)).build();
     }
+    return requestDto;
   }
 
   private void validateIgnoreMobileAppDto(IgnoreMobileAppDto ignoreMobileAppDto) {
