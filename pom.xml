@@ -28,9 +28,16 @@
 		<liquibase.version>3.6.1</liquibase.version>
 		<h2database.version>1.4.197</h2database.version>
 		<jackson-modules-java8.version>2.9.5</jackson-modules-java8.version>
+		<aws-java-sdk.version>1.11.328</aws-java-sdk.version>
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>${aws-java-sdk.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.liquibase</groupId>

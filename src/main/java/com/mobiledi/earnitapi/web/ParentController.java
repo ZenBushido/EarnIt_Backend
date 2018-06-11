@@ -11,7 +11,9 @@ import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,6 +43,19 @@ public class ParentController {
 		parent = parentRepositoryCustom.updateParent(parent);
 		return new ResponseEntity<Parent>(parent, HttpStatus.ACCEPTED);
 	}
+
+
+	@GetMapping(value = "/parents/{parentId}/profile/image")
+	public String getProfilePicture(@PathVariable Integer parentId){
+
+		return "";
+	}
+
+	@PostMapping(value = "/parents/{parentId}/profile/image")
+  public String saveProfilePicture(@PathVariable Integer parentId){
+
+		return "";
+  }
 
 	private void doesParentExist(Integer id) {
 		Optional<Parent> parent = parentRepo.findById(id);
