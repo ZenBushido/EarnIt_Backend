@@ -86,10 +86,6 @@ public class ChildrenRepositoryCustomImpl implements ChildrenRepositoryCustom {
 			lastChildRecord.setMessage(child.getMessage());
 		}
 
-		if (StringUtils.isNotBlank(child.getPassword())) {
-			lastChildRecord.setPassword(passwordEncoder.encode(child.getPassword()));
-		}
-
 		if (StringUtils.isNotBlank(child.getPhone())) {
 			lastChildRecord.setPhone(child.getPhone());
 		}

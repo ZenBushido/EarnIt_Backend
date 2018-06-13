@@ -73,10 +73,6 @@ public class ParentRepositoryCustomImpl implements ParentRepositoryCustom {
 			lastParentRecord.setFcmToken(parent.getFcmToken());
 		}
 
-		if (StringUtils.isNotBlank(parent.getPassword())) {
-			lastParentRecord.setPassword(passwordEncoder.encode(parent.getPassword()));
-		}
-
 		if (StringUtils.isNotBlank(parent.getPhone())) {
 			lastParentRecord.setPhone(parent.getPhone());
 		}
