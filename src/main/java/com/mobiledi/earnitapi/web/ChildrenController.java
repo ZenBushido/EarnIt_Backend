@@ -36,81 +36,82 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ChildrenController {
 
-	@Autowired
-	private ChildrenRepository childrenRepo;
-	
-	@Autowired
-	private ChildrenRepositoryCustom childrenRepositoryCustom;
+  @Autowired
+  private ChildrenRepository childrenRepo;
 
-	@RequestMapping("/childrens/{id}")
-	public List<Children> findById(@PathVariable int id) {
+  @Autowired
+  private ChildrenRepositoryCustom childrenRepositoryCustom;
 
-		List<Children> childrens = childrenRepo.findChildrenByAccountIdAndIsDeletedOrderByFirstNameAsc(id, false);
-		childrens.forEach(child -> {
+  @RequestMapping("/childrens/{id}")
+  public List<Children> findById(@PathVariable int id) {
 
-			List<Task> toRemove = new ArrayList<>();
-			child.getTasks().forEach(task -> {
-				if (task.getStatus().equals(AppConstants.TASK_CLOSED)) {
-					toRemove.add(task);
-				}
-			});
-			child.getTasks().removeAll(toRemove);
-			child.setUserType(AppConstants.USER_CHILD);
-		});
-		return childrens;
-	}
+    List<Children> childrens = childrenRepo
+        .findChildrenByAccountIdAndIsDeletedOrderByFirstNameAsc(id, false);
+    childrens.forEach(child -> {
 
-	@RequestMapping(value = "/childrens/{id}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteChild(@PathVariable Integer id) {
-		Optional<Children> childrenOptional = childrenRepo.findById(id);
-		if(childrenOptional.isPresent()) {
-			Children children = childrenOptional.get();
-			children.setDeleted(true);
-			children.setUpdateDate(new Timestamp(new DateTime().getMillis()));
+      List<Task> toRemove = new ArrayList<>();
+      child.getTasks().forEach(task -> {
+        if (task.getStatus().equals(AppConstants.TASK_CLOSED)) {
+          toRemove.add(task);
+        }
+      });
+      child.getTasks().removeAll(toRemove);
+      child.setUserType(AppConstants.USER_CHILD);
+    });
+    return childrens;
+  }
 
-			log.debug("Deleting child account: " + children.getId());
-			childrenRepo.save(children);
+  @RequestMapping(value = "/childrens/{id}", method = RequestMethod.DELETE)
+  public ResponseEntity<?> deleteChild(@PathVariable Integer id) {
+    Optional<Children> childrenOptional = childrenRepo.findById(id);
+    if (childrenOptional.isPresent()) {
+      Children children = childrenOptional.get();
+      children.setDeleted(true);
+      children.setUpdateDate(new Timestamp(new DateTime().getMillis()));
 
-			return new ResponseEntity<>(new Response(MessageConstants.CHILDREN_DELETED), HttpStatus.OK);
-		}
+      log.debug("Deleting child account: " + children.getId());
+      childrenRepo.save(children);
 
-		ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, CHILDREN_DELETED_FAILED_CODE,
-				CHILDREN_DELETED_FAILED);
-		return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
-	}
+      return new ResponseEntity<>(new Response(MessageConstants.CHILDREN_DELETED), HttpStatus.OK);
+    }
 
-	@RequestMapping(value = "/children", method = RequestMethod.PUT)
-	public ResponseEntity<?> update(@RequestBody Children child) throws JSONException {
+    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, CHILDREN_DELETED_FAILED_CODE,
+        CHILDREN_DELETED_FAILED);
+    return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+  }
 
-		doesChildExist(child.getId());
-		child = childrenRepositoryCustom.updateChild(child);
-		if (StringUtils.isNotBlank(child.getFcmToken()) && StringUtils.isNotBlank(child.getMessage())) {
-			PushNotifier
-					.sendPushNotification(0, child.getFcmToken(), NotificationCategory.MESSAGE_TO_CHILD,
-							child.getMessage());
-		}
+  @RequestMapping(value = "/children", method = RequestMethod.PUT)
+  public ResponseEntity<?> update(@RequestBody Children child) throws JSONException {
 
-		return new ResponseEntity<Children>(child, HttpStatus.ACCEPTED);
+    doesChildExist(child.getId());
+    child = childrenRepositoryCustom.updateChild(child);
+    if (StringUtils.isNotBlank(child.getFcmToken()) && StringUtils.isNotBlank(child.getMessage())) {
+      PushNotifier
+          .sendPushNotification(0, child.getFcmToken(), NotificationCategory.MESSAGE_TO_CHILD,
+              child.getMessage());
+    }
 
-	}
+    return new ResponseEntity<Children>(child, HttpStatus.ACCEPTED);
 
-	@GetMapping(value = "/children/{parentId}/profile/image")
-	public String getProfilePicture(@PathVariable Integer parentId){
+  }
 
-		return "";
-	}
+  @GetMapping(value = "/children/{parentId}/profile/images/{imageName}")
+  public String getProfilePicture(@PathVariable Integer parentId) {
 
-	@PostMapping(value = "/children/{parentId}/profile/image")
-	public String saveProfilePicture(@PathVariable Integer parentId){
+    return "";
+  }
 
-		return "";
-	}
+  @PostMapping(value = "/children/{parentId}/profile/images/{imageName}")
+  public String saveProfilePicture(@PathVariable Integer parentId) {
 
-	private void doesChildExist(Integer id) {
-		Optional<Children> children = childrenRepo.findById(id);
-		if (!children.isPresent()) {
-			throw new ValidationException("Children not found with id : " + id, 400);
-		}
-	}
+    return "";
+  }
+
+  private void doesChildExist(Integer id) {
+    Optional<Children> children = childrenRepo.findById(id);
+    if (!children.isPresent()) {
+      throw new ValidationException("Children not found with id : " + id, 400);
+    }
+  }
 
 }
