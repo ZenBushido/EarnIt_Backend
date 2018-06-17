@@ -6,6 +6,7 @@ import com.mobiledi.earnitapi.repository.AccountRepository;
 import com.mobiledi.earnitapi.repository.ChildrenRepository;
 import com.mobiledi.earnitapi.repository.custom.ChildrenRepositoryCustom;
 import java.util.Objects;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -18,9 +19,7 @@ public class AuthenticatedUserProvider {
   private AccountRepository accountRepository;
 
   public Children getLoggedInChild() throws IllegalAccessException {
-    User user = (User) SecurityContextHolder.getContext().getAuthentication()
-        .getPrincipal();
-    Children children = accountRepository.findChildByEmail(user.getUsername());
+    Children children = getChild();
     if (Objects.isNull(children)) {
       throw new IllegalAccessException("No logged in child found.");
     }
@@ -28,19 +27,50 @@ public class AuthenticatedUserProvider {
   }
 
   public Parent getLoggedInParent() throws IllegalAccessException {
-    User user = (User) SecurityContextHolder.getContext().getAuthentication()
-        .getPrincipal();
-    Parent parent = accountRepository.findParentByEmail(user.getUsername());
+    Parent parent = getParent();
     if (Objects.isNull(parent)) {
       throw new IllegalAccessException("No logged in parent found.");
     }
     return parent;
   }
 
-  public String getLoggedInUserEmail(){
+  public String getLoggedInUserEmail() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication()
         .getPrincipal();
     return user.getUsername();
+  }
+
+  @SneakyThrows
+  public void raiseErrorIfParentIdIsDifferentThanLoggedInUser(Integer parentId) {
+    Parent parent = getParent();
+    raiseIdsAreDifferentError(parentId, parent.getId());
+
+  }
+
+  @SneakyThrows
+  public void raiseErrorIfChildIdIsDifferentThanLoggedInUser(Integer childId) {
+    Children children = getChild();
+    raiseIdsAreDifferentError(childId, children.getId());
+  }
+
+  @SneakyThrows
+  private void raiseIdsAreDifferentError(Integer id1, Integer id2) {
+    if (!id1.equals(id2)) {
+      throw new IllegalAccessException(
+          "LoggedIn user id and provided id to access resource are different and now allowed");
+    }
+  }
+
+  private Parent getParent() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication()
+        .getPrincipal();
+    return accountRepository.findParentByEmail(user.getUsername());
+  }
+
+  private Children getChild() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication()
+        .getPrincipal();
+    return accountRepository.findChildByEmail(user.getUsername());
   }
 
 }
