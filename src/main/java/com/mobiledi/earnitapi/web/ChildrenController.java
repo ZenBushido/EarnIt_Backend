@@ -3,22 +3,31 @@ package com.mobiledi.earnitapi.web;
 import static com.mobiledi.earnitapi.util.MessageConstants.CHILDREN_DELETED_FAILED;
 import static com.mobiledi.earnitapi.util.MessageConstants.CHILDREN_DELETED_FAILED_CODE;
 
+import com.mobiledi.earnitapi.constants.StringConstant;
 import com.mobiledi.earnitapi.domain.Children;
 import com.mobiledi.earnitapi.domain.Task;
 import com.mobiledi.earnitapi.domain.custom.ApiError;
 import com.mobiledi.earnitapi.domain.custom.Response;
 import com.mobiledi.earnitapi.repository.ChildrenRepository;
 import com.mobiledi.earnitapi.repository.custom.ChildrenRepositoryCustom;
+import com.mobiledi.earnitapi.services.FileStorageService;
 import com.mobiledi.earnitapi.util.AppConstants;
+import com.mobiledi.earnitapi.util.AuthenticatedUserProvider;
+import com.mobiledi.earnitapi.util.ImageUtil;
 import com.mobiledi.earnitapi.util.MessageConstants;
 import com.mobiledi.earnitapi.util.NotificationConstants.NotificationCategory;
 import com.mobiledi.earnitapi.util.PushNotifier;
+import java.io.File;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +39,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -41,6 +52,15 @@ public class ChildrenController {
 
   @Autowired
   private ChildrenRepositoryCustom childrenRepositoryCustom;
+
+  @Autowired
+  private AuthenticatedUserProvider authenticatedUserProvider;
+
+  @Autowired
+  private FileStorageService fileStorageService;
+
+  @Autowired
+  private ImageUtil imageUtil;
 
   @RequestMapping("/childrens/{id}")
   public List<Children> findById(@PathVariable int id) {
@@ -95,18 +115,28 @@ public class ChildrenController {
 
   }
 
-  @GetMapping(value = "/children/{parentId}/profile/images/{imageName}")
-  public String getProfilePicture(@PathVariable Integer parentId) {
-
-    return "";
+  @GetMapping(value = "/childrens/{childId}/profile/images/{imageName}")
+  @SneakyThrows
+  public void getProfilePicture(@PathVariable Integer childId, @PathVariable String imageName, HttpServletResponse httpServletResponse) {
+    Children child = authenticatedUserProvider.getLoggedInChild();
+    authenticatedUserProvider.raiseErrorIfChildIdIsDifferentThanLoggedInUser(childId);
+    InputStream inputStream = fileStorageService.getFile(child.getAvatar());
+    httpServletResponse.setContentType(StringConstant.CONTENT_TYPE_OCTET_STREAM);
+    IOUtils.copyLarge(inputStream, httpServletResponse.getOutputStream());
   }
 
-  @PostMapping(value = "/children/{parentId}/profile/images/{imageName}")
-  public String saveProfilePicture(@PathVariable Integer parentId) {
-
-    return "";
+  @PostMapping(value = "/childrens/profile/images")
+  @SneakyThrows
+  public String saveProfilePicture(@RequestParam("file") MultipartFile file) {
+    Children child = authenticatedUserProvider.getLoggedInChild();
+    String profileImageUrl = imageUtil.createChildProfileUrl(child, file.getOriginalFilename());
+    File temporaryProfilePicture = imageUtil.getTemporaryFileFromMultipartFile(file);
+    String urlPath = fileStorageService.storeFile(profileImageUrl, temporaryProfilePicture);
+    child.setAvatar(urlPath);
+    childrenRepo.save(child);
+    temporaryProfilePicture.delete();
+    return urlPath;
   }
-
   private void doesChildExist(Integer id) {
     Optional<Children> children = childrenRepo.findById(id);
     if (!children.isPresent()) {

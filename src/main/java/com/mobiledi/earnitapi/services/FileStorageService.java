@@ -1,12 +1,13 @@
 package com.mobiledi.earnitapi.services;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.InputStream;
 
 public interface FileStorageService {
 
-  void storeFile(String fullPath, InputStream file);
+  String storeFile(String fullPath, File tempFile);
 
-  BufferedInputStream getFile(String fullPath);
+  InputStream getFile(String fullPath);
 
 }

@@ -22,10 +22,10 @@ public class AppConfiguration {
 
   @Value("${storage.endpoint.digital.ocean}")
   private String endpointForDigitalOcean;
-/*
-  @Value("storage.bucket.digital.ocean")
+
+  @Value("${storage.bucket.digital.ocean}")
   private String bucketForDigitalOcean;
-*/
+
   @Bean
   public DaoAuthenticationProvider authProvider(UserDetailsService userDetailsService) {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -48,7 +48,6 @@ public class AppConfiguration {
   public AmazonS3Client amazonS3ClientForDigitalOcean() {
     AmazonS3Client amazonS3Client = new AmazonS3Client(basicAWSCredentialsForDigitalOcean());
     amazonS3Client.setEndpoint(endpointForDigitalOcean);
-    //amazonS3Client.getBucketAccelerateConfiguration(bucketForDigitalOcean);
     return amazonS3Client;
   }
 

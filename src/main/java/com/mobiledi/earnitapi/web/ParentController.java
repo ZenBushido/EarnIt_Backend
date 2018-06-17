@@ -1,14 +1,20 @@
 package com.mobiledi.earnitapi.web;
 
+import com.mobiledi.earnitapi.constants.StringConstant;
 import com.mobiledi.earnitapi.domain.Parent;
 import com.mobiledi.earnitapi.repository.ParentRepository;
 import com.mobiledi.earnitapi.repository.custom.ParentRepositoryCustom;
 import com.mobiledi.earnitapi.services.FileStorageService;
 import com.mobiledi.earnitapi.util.AuthenticatedUserProvider;
+import com.mobiledi.earnitapi.util.ImageUtil;
+import java.io.File;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.Optional;
+import javax.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,53 +34,64 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 public class ParentController {
 
-	@Autowired
-	ParentRepository parentRepo;
-
-	@Autowired
-	ParentRepositoryCustom parentRepositoryCustom;
-
-	@Autowired
-	FileStorageService fileStorageService;
+  @Autowired
+  ParentRepository parentRepo;
 
   @Autowired
-  AuthenticatedUserProvider authenticatedUserProvider;
+  ParentRepositoryCustom parentRepositoryCustom;
 
-	@RequestMapping(value = "/parent/{id}", method = RequestMethod.GET)
-	public ResponseEntity<?> findByChildId(@PathVariable Integer id) throws JSONException {
+  @Autowired
+  private FileStorageService fileStorageService;
 
-		return new ResponseEntity<Parent>(parentRepo.findParentById(id), HttpStatus.OK);
+  @Autowired
+  private AuthenticatedUserProvider authenticatedUserProvider;
 
-	}
+  @Autowired
+  private ImageUtil imageUtil;
 
-	@RequestMapping(value = "/parent", method = RequestMethod.PUT)
-	public ResponseEntity<?> update(@RequestBody Parent parent) throws JSONException {
-		doesParentExist(parent.getId());
-		parent.setUpdateDate(new Timestamp(new DateTime().getMillis()));
-		parent = parentRepositoryCustom.updateParent(parent);
-		return new ResponseEntity<Parent>(parent, HttpStatus.ACCEPTED);
-	}
+  @RequestMapping(value = "/parent/{id}", method = RequestMethod.GET)
+  public ResponseEntity<?> findByChildId(@PathVariable Integer id) throws JSONException {
 
-  @GetMapping(value = "/parents/profile/images/{imageName}")
-  public String getProfilePicture(@PathVariable String imageName) {
+    return new ResponseEntity<Parent>(parentRepo.findParentById(id), HttpStatus.OK);
 
-    return "";
+  }
+
+  @RequestMapping(value = "/parent", method = RequestMethod.PUT)
+  public ResponseEntity<?> update(@RequestBody Parent parent) throws JSONException {
+    doesParentExist(parent.getId());
+    parent.setUpdateDate(new Timestamp(new DateTime().getMillis()));
+    parent = parentRepositoryCustom.updateParent(parent);
+    return new ResponseEntity<Parent>(parent, HttpStatus.ACCEPTED);
+  }
+
+  @GetMapping(value = "/parents/{parentId}/profile/images/{imageName}")
+  @SneakyThrows
+  public void getProfilePicture(@PathVariable Integer parentId, @PathVariable String imageName, HttpServletResponse httpServletResponse) {
+    Parent parent = authenticatedUserProvider.getLoggedInParent();
+    authenticatedUserProvider.raiseErrorIfParentIdIsDifferentThanLoggedInUser(parentId);
+    InputStream inputStream = fileStorageService.getFile(parent.getAvatar());
+    httpServletResponse.setContentType(StringConstant.CONTENT_TYPE_OCTET_STREAM);
+    IOUtils.copyLarge(inputStream, httpServletResponse.getOutputStream());
   }
 
   @PostMapping(value = "/parents/profile/images")
   @SneakyThrows
   public String saveProfilePicture(@RequestParam("file") MultipartFile file) {
     Parent parent = authenticatedUserProvider.getLoggedInParent();
-    fileStorageService.storeFile("/parents/" + parent.getId() + "profile/images/" + file.getOriginalFilename(),
-        file.getInputStream());
-    return "";
+    String profileImageUrl = imageUtil.createParentProfileUrl(parent, file.getOriginalFilename());
+    File temporaryProfilePicture = imageUtil.getTemporaryFileFromMultipartFile(file);
+    String urlPath = fileStorageService.storeFile(profileImageUrl, temporaryProfilePicture);
+    parent.setAvatar(urlPath);
+    parentRepo.save(parent);
+    temporaryProfilePicture.delete();
+    return urlPath;
   }
 
-	private void doesParentExist(Integer id) {
-		Optional<Parent> parent = parentRepo.findById(id);
-		if (!parent.isPresent()) {
-			throw new ValidationException("Parent not found with id : " + id, 400);
-		}
-	}
+  private void doesParentExist(Integer id) {
+    Optional<Parent> parent = parentRepo.findById(id);
+    if (!parent.isPresent()) {
+      throw new ValidationException("Parent not found with id : " + id, 400);
+    }
+  }
 
 }
