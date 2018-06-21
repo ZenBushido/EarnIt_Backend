@@ -69,7 +69,7 @@ public class ChildrenController {
     List<Children> childrenList = childrenRepo.findChildrenByAccountIdAndIsDeletedOrderByFirstNameAsc(id, false);
     childrenList.forEach(child -> {
       List<Task> toRemove = child.getTasks().stream()
-          .filter(task -> task.getStatus().equals(AppConstants.TASK_CLOSED) && task.isDeleted())
+          .filter(task -> task.getStatus().equals(AppConstants.TASK_CLOSED) || task.isDeleted())
           .collect(Collectors.toList());
       child.getTasks().removeAll(toRemove);
       child.setUserType(AppConstants.USER_CHILD);
