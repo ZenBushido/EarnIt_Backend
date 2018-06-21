@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -65,20 +66,15 @@ public class ChildrenController {
   @RequestMapping("/childrens/{id}")
   public List<Children> findById(@PathVariable int id) {
 
-    List<Children> childrens = childrenRepo
-        .findChildrenByAccountIdAndIsDeletedOrderByFirstNameAsc(id, false);
-    childrens.forEach(child -> {
-
-      List<Task> toRemove = new ArrayList<>();
-      child.getTasks().forEach(task -> {
-        if (task.getStatus().equals(AppConstants.TASK_CLOSED)) {
-          toRemove.add(task);
-        }
-      });
+    List<Children> childrenList = childrenRepo.findChildrenByAccountIdAndIsDeletedOrderByFirstNameAsc(id, false);
+    childrenList.forEach(child -> {
+      List<Task> toRemove = child.getTasks().stream()
+          .filter(task -> task.getStatus().equals(AppConstants.TASK_CLOSED) && !task.isDeleted())
+          .collect(Collectors.toList());
       child.getTasks().removeAll(toRemove);
       child.setUserType(AppConstants.USER_CHILD);
     });
-    return childrens;
+    return childrenList;
   }
 
   @RequestMapping(value = "/childrens/{id}", method = RequestMethod.DELETE)
