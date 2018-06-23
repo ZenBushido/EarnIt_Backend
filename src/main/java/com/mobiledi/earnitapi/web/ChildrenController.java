@@ -17,6 +17,7 @@ import com.mobiledi.earnitapi.util.ImageUtil;
 import com.mobiledi.earnitapi.util.MessageConstants;
 import com.mobiledi.earnitapi.util.NotificationConstants.NotificationCategory;
 import com.mobiledi.earnitapi.util.PushNotifier;
+import com.mobiledi.earnitapi.util.TaskUtil;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.Timestamp;
@@ -61,6 +62,9 @@ public class ChildrenController {
   private FileStorageService fileStorageService;
 
   @Autowired
+  private TaskUtil taskUtil;
+
+  @Autowired
   private ImageUtil imageUtil;
 
   @RequestMapping("/childrens/{id}")
@@ -68,9 +72,7 @@ public class ChildrenController {
 
     List<Children> childrenList = childrenRepo.findChildrenByAccountIdAndIsDeletedOrderByFirstNameAsc(id, false);
     childrenList.forEach(child -> {
-      List<Task> toRemove = child.getTasks().stream()
-          .filter(task -> task.getStatus().equals(AppConstants.TASK_CLOSED) || task.isDeleted())
-          .collect(Collectors.toList());
+      List<Task> toRemove = taskUtil.filterClosedTasks(child.getTasks());
       child.getTasks().removeAll(toRemove);
       child.setUserType(AppConstants.USER_CHILD);
     });
