@@ -105,7 +105,7 @@ public class AccountController {
 			if (child != null) {
 				child.setUserType(AppConstants.USER_CHILD);
 				List<Task> taskList = taskUtil.filterClosedTasks(child.getTasks());
-				child.getTasks().remove(taskList);
+				child.setTasks(taskList);
 				return new ResponseEntity<Children>(child, HttpStatus.OK);
 			}
 		}

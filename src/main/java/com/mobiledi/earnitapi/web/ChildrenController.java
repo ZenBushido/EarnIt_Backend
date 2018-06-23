@@ -72,8 +72,8 @@ public class ChildrenController {
 
     List<Children> childrenList = childrenRepo.findChildrenByAccountIdAndIsDeletedOrderByFirstNameAsc(id, false);
     childrenList.forEach(child -> {
-      List<Task> toRemove = taskUtil.filterClosedTasks(child.getTasks());
-      child.getTasks().removeAll(toRemove);
+      List<Task> taskList = taskUtil.filterClosedTasks(child.getTasks());
+      child.setTasks(taskList);
       child.setUserType(AppConstants.USER_CHILD);
     });
     return childrenList;
