@@ -13,6 +13,7 @@ import static com.mobiledi.earnitapi.util.MessageConstants.USER_EXISTS_CODE;
 import com.mobiledi.earnitapi.domain.Account;
 import com.mobiledi.earnitapi.domain.Children;
 import com.mobiledi.earnitapi.domain.Parent;
+import com.mobiledi.earnitapi.domain.Task;
 import com.mobiledi.earnitapi.domain.custom.ApiError;
 import com.mobiledi.earnitapi.domain.custom.LoginDomain;
 import com.mobiledi.earnitapi.domain.custom.Response;
@@ -24,6 +25,8 @@ import com.mobiledi.earnitapi.repository.custom.ParentRepositoryCustom;
 import com.mobiledi.earnitapi.util.AppConstants;
 import com.mobiledi.earnitapi.util.AuthenticatedUserProvider;
 import com.mobiledi.earnitapi.util.MailUtility;
+import com.mobiledi.earnitapi.util.TaskUtil;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,25 +46,28 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountController {
 
 	@Autowired
-	AccountRepository accountRepo;
+	private AccountRepository accountRepo;
 
 	@Autowired
-	ParentRepositoryCustom parentRepo;
+	private ParentRepositoryCustom parentRepo;
 
 	@Autowired
-	ChildrenRepositoryCustom childRepo;
+	private ChildrenRepositoryCustom childRepo;
 
 	@Autowired
-	ChildrenRepository childrenRepository;
+	private ChildrenRepository childrenRepository;
 
 	@Autowired
-	ParentRepository parentRepository;
+	private ParentRepository parentRepository;
 
 	@Autowired
-	PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
 	@Autowired
-	AuthenticatedUserProvider authenticatedUserProvider;
+	private AuthenticatedUserProvider authenticatedUserProvider;
+
+	@Autowired
+	private TaskUtil taskUtil;
 
 	@RequestMapping("/account/{id}")
 	public Account findById(@PathVariable int id) {
@@ -98,6 +104,8 @@ public class AccountController {
 			Children child = accountRepo.findChildByEmail(email);
 			if (child != null) {
 				child.setUserType(AppConstants.USER_CHILD);
+				List<Task> taskList = taskUtil.filterClosedTasks(child.getTasks());
+				child.getTasks().remove(taskList);
 				return new ResponseEntity<Children>(child, HttpStatus.OK);
 			}
 		}
