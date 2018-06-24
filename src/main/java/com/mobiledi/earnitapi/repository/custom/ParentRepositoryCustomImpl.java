@@ -53,10 +53,6 @@ public class ParentRepositoryCustomImpl implements ParentRepositoryCustom {
 
 		parent.setUpdateDate(new Timestamp(new DateTime().getMillis()));
 
-		if (StringUtils.isNotBlank(parent.getAvatar())) {
-			lastParentRecord.setAvatar(parent.getAvatar());
-		}
-
 		if (StringUtils.isNotBlank(parent.getEmail())) {
 			lastParentRecord.setEmail(parent.getEmail());
 		}
