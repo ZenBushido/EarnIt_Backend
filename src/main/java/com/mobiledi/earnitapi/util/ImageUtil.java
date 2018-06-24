@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageUtil {
 
   private static final String PROFILE_IMAGE_SUB_PATH_IN_PROFILE_URL = "/profile/images/";
-  private static final String TASK_IMAGES = "/task/";
 
   public String createParentProfileUrl(Parent parent, String fileName) {
     return "parents/" + parent.getId() + PROFILE_IMAGE_SUB_PATH_IN_PROFILE_URL + fileName;
