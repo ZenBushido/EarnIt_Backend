@@ -2,6 +2,7 @@ package com.mobiledi.earnitapi.util;
 
 import com.mobiledi.earnitapi.domain.Children;
 import com.mobiledi.earnitapi.domain.Parent;
+import com.mobiledi.earnitapi.domain.Task;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -35,6 +36,15 @@ public class ImageUtil {
     FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
     IOUtils.copy(file.getInputStream(), fileOutputStream);
     return tempFile;
+  }
+
+  public String createTaskImageUrl(Task task, MultipartFile multipartFile) {
+    String fileName = multipartFile.getOriginalFilename();
+    return createTaskImageUrl(task, fileName.substring(0, fileName.indexOf('.')));
+  }
+
+  public String createTaskImageUrl(Task task, String fileName) {
+    return "tasks/" + task.getId() + "/images/" + fileName;
   }
 
   public String createChildProfileUrl(Children children, String fileName) {

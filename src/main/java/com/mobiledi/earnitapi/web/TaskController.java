@@ -4,6 +4,7 @@ import static com.mobiledi.earnitapi.util.MessageConstants.TASK_DELETED;
 import static com.mobiledi.earnitapi.util.MessageConstants.TASK_DELETED_FAILED;
 import static com.mobiledi.earnitapi.util.MessageConstants.TASK_DELETED_FAILED_CODE;
 
+import com.mobiledi.earnitapi.constants.StringConstant;
 import com.mobiledi.earnitapi.domain.Children;
 import com.mobiledi.earnitapi.domain.Goal;
 import com.mobiledi.earnitapi.domain.Parent;
@@ -17,18 +18,25 @@ import com.mobiledi.earnitapi.repository.TaskCommentRepository;
 import com.mobiledi.earnitapi.repository.TasksRepository;
 import com.mobiledi.earnitapi.repository.custom.ChildrenRepositoryCustom;
 import com.mobiledi.earnitapi.repository.custom.TaskRepositoryCustom;
+import com.mobiledi.earnitapi.services.FileStorageService;
 import com.mobiledi.earnitapi.services.GoalServiceCustom;
 import com.mobiledi.earnitapi.util.AppConstants;
+import com.mobiledi.earnitapi.util.ImageUtil;
 import com.mobiledi.earnitapi.util.NotificationConstants.NotificationCategory;
 import com.mobiledi.earnitapi.util.PushNotifier;
+import java.io.File;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +48,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -70,6 +80,12 @@ public class TaskController {
 	@Autowired
 	private GoalServiceCustom goalServiceCustom;
 
+	@Autowired
+	private ImageUtil imageUtil;
+
+	@Autowired
+	private FileStorageService fileStorageService;
+
 	@RequestMapping(value = "/tasks", method = RequestMethod.GET)
 	public List<Task> findAllRepeatTAsk() {
 		log.info("fetching repeat task list ");
@@ -82,6 +98,32 @@ public class TaskController {
 	@RequestMapping(value = "/tasks/{childId}", method = RequestMethod.GET)
 	public ResponseEntity<?> findByChildId(@PathVariable int childId) throws JSONException {
 		return new ResponseEntity<Iterable<Task>>(taskRepo.findByChildrenIdAndIsDeleted(childId, false), HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/tasks/{taskId}/images/", method = RequestMethod.POST)
+	public String update(@PathVariable int taskId, @RequestParam("file") MultipartFile file) {
+		Optional<Task> task = taskRepo.findById(taskId);
+		if(!task.isPresent()){
+			throw new ValidationException("Task not found with task id : " + taskId, HttpStatus.NOT_FOUND.value());
+		}
+		File temporaryFile = imageUtil.getTemporaryFileFromMultipartFile(file);
+		String taskImageUrl = imageUtil.createTaskImageUrl(task.get(), file);
+		fileStorageService.storeFile(taskImageUrl, temporaryFile);
+		temporaryFile.delete();
+		return taskImageUrl;
+	}
+
+	@GetMapping(value = "/tasks/{taskId}/images/{imageName}")
+	@SneakyThrows
+	public void getTaskPicture(@PathVariable Integer taskId, @PathVariable String imageName, HttpServletResponse httpServletResponse) {
+		Optional<Task> task = taskRepo.findById(taskId);
+		if(!task.isPresent()){
+			throw new ValidationException("Task not found with task id : " + taskId, HttpStatus.NOT_FOUND.value());
+		}
+		String taskImageUrl = imageUtil.createTaskImageUrl(task.get(), imageName);
+		InputStream inputStream = fileStorageService.getFile(taskImageUrl);
+		httpServletResponse.setContentType(StringConstant.CONTENT_TYPE_OCTET_STREAM);
+		IOUtils.copyLarge(inputStream, httpServletResponse.getOutputStream());
 	}
 
 	@RequestMapping(value = "/tasks", method = RequestMethod.POST)
