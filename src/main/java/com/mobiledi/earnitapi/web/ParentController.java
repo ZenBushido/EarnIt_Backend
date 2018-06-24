@@ -1,7 +1,9 @@
 package com.mobiledi.earnitapi.web;
 
 import com.mobiledi.earnitapi.constants.StringConstant;
+import com.mobiledi.earnitapi.domain.Children;
 import com.mobiledi.earnitapi.domain.Parent;
+import com.mobiledi.earnitapi.repository.ChildrenRepository;
 import com.mobiledi.earnitapi.repository.ParentRepository;
 import com.mobiledi.earnitapi.repository.custom.ParentRepositoryCustom;
 import com.mobiledi.earnitapi.services.FileStorageService;
@@ -49,6 +51,9 @@ public class ParentController {
   @Autowired
   private ImageUtil imageUtil;
 
+  @Autowired
+  private ChildrenRepository childrenRepo;
+
   @RequestMapping(value = "/parent/{id}", method = RequestMethod.GET)
   public ResponseEntity<?> findByChildId(@PathVariable Integer id) throws JSONException {
 
@@ -83,6 +88,25 @@ public class ParentController {
     String urlPath = fileStorageService.storeFile(profileImageUrl, temporaryProfilePicture);
     parent.setAvatar(urlPath);
     parentRepo.save(parent);
+    temporaryProfilePicture.delete();
+    return urlPath;
+  }
+
+  @PostMapping(value = "/parents/children/{childId}/profile/images")
+  @SneakyThrows
+  public String saveChildProfilePicture(@PathVariable("childId") int childId,
+      @RequestParam("file") MultipartFile file) {
+    Optional<Children> childrenOptional = childrenRepo.findById(childId);
+    if (!childrenOptional.isPresent()) {
+      throw new ValidationException("Child not found with id : " + childId, 400);
+    }
+    Children children = childrenOptional.get();
+    authenticatedUserProvider.getLoggedInParent();
+    String profileImageUrl = imageUtil.createChildProfileUrl(children, file.getOriginalFilename());
+    File temporaryProfilePicture = imageUtil.getTemporaryFileFromMultipartFile(file);
+    String urlPath = fileStorageService.storeFile(profileImageUrl, temporaryProfilePicture);
+    children.setAvatar(urlPath);
+    childrenRepo.save(children);
     temporaryProfilePicture.delete();
     return urlPath;
   }
