@@ -100,7 +100,7 @@ public class TaskController {
 		return new ResponseEntity<Iterable<Task>>(taskRepo.findByChildrenIdAndIsDeleted(childId, false), HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/tasks/{taskId}/images/", method = RequestMethod.POST)
+	@RequestMapping(value = "/tasks/{taskId}/images", method = RequestMethod.POST)
 	public String update(@PathVariable int taskId, @RequestParam("file") MultipartFile file) {
 		Optional<Task> task = taskRepo.findById(taskId);
 		if(!task.isPresent()){

@@ -116,9 +116,8 @@ public class ChildrenController {
   @GetMapping(value = "/childrens/{childId}/profile/images/{imageName}")
   @SneakyThrows
   public void getProfilePicture(@PathVariable Integer childId, @PathVariable String imageName, HttpServletResponse httpServletResponse) {
-    Children child = authenticatedUserProvider.getLoggedInChild();
-    authenticatedUserProvider.raiseErrorIfChildIdIsDifferentThanLoggedInUser(childId);
-    InputStream inputStream = fileStorageService.getFile(child.getAvatar());
+    Children children = childrenRepo.findById(childId).get();
+    InputStream inputStream = fileStorageService.getFile(children.getAvatar());
     httpServletResponse.setContentType(StringConstant.CONTENT_TYPE_OCTET_STREAM);
     IOUtils.copyLarge(inputStream, httpServletResponse.getOutputStream());
   }
