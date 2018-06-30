@@ -125,12 +125,12 @@ public class MobileApplicationServiceImpl implements MobileApplicationService {
           OffsetDateTime end = OffsetDateTime
               .parse(mobileApplicationUsageDto.getEndDateTimeWithZone());
           return MobileApplicationUsage.builder()
-              .endTime(Timestamp.from(start.toInstant()))
-              .startTime(Timestamp.from(end.toInstant()))
+              .endTime(Timestamp.from(end.toInstant()))
+              .startTime(Timestamp.from(start.toInstant()))
               .startWithZone(mobileApplicationUsageDto.getStartDateTimeWithZone())
               .endWithZone(mobileApplicationUsageDto.getEndDateTimeWithZone())
               .durationInMinute(
-                  Duration.between(start.toLocalTime(), end.toLocalTime()).toMinutes())
+                  Duration.between(start, end).toMinutes())
               .build();
         }).collect(Collectors.toList());
   }

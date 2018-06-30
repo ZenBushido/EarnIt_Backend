@@ -269,18 +269,6 @@ public class TaskController {
 
 	}
 
-	@GetMapping(value = "/task/{taskId}/comment/{commentId}/image")
-	public String getProfilePicture(@PathVariable Integer taskId, @PathVariable Integer commentId) {
-
-		return "";
-	}
-
-	@PostMapping(value = "/task/{taskId}/comment/{commentId}/image")
-	public String saveProfilePicture(@PathVariable Integer parentId){
-
-		return "";
-	}
-
 	private void taskReassigned(Task taskObject, Children notifyChild) {
 		taskObject.getGoal().setChildren(notifyChild);
 
