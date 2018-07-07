@@ -1,21 +1,28 @@
 package com.mobiledi.earnitapi.web;
 
+import static com.mobiledi.earnitapi.util.MessageConstants.GOAL_DELETED;
+import static com.mobiledi.earnitapi.util.MessageConstants.GOAL_DELETED_FAILED;
+import static com.mobiledi.earnitapi.util.MessageConstants.GOAL_DELETED_FAILED_CODE;
+import static com.mobiledi.earnitapi.util.MessageConstants.GOAL_ID_NOT_MISSING;
+import static com.mobiledi.earnitapi.util.MessageConstants.GOAL_ID_NOT_MISSING_CODE;
+import static com.mobiledi.earnitapi.util.MessageConstants.GOAL_INVALID_ID;
+import static com.mobiledi.earnitapi.util.MessageConstants.GOAL_INVALID_ID_CODE;
+
+import com.mobiledi.earnitapi.domain.Adjustments;
+import com.mobiledi.earnitapi.domain.Goal;
+import com.mobiledi.earnitapi.domain.Task;
+import com.mobiledi.earnitapi.domain.custom.ApiError;
+import com.mobiledi.earnitapi.domain.custom.Response;
+import com.mobiledi.earnitapi.repository.AdjustmentsRepository;
+import com.mobiledi.earnitapi.repository.GoalRepository;
+import com.mobiledi.earnitapi.repository.TasksRepository;
+import com.mobiledi.earnitapi.util.AppConstants;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import com.mobiledi.earnitapi.domain.Adjustments;
-import com.mobiledi.earnitapi.domain.Children;
-import com.mobiledi.earnitapi.domain.custom.ApiError;
-import com.mobiledi.earnitapi.domain.custom.Response;
-import com.mobiledi.earnitapi.repository.AdjustmentsRepository;
-import com.mobiledi.earnitapi.repository.ChildrenRepository;
-import com.mobiledi.earnitapi.util.MessageConstants;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +34,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.mobiledi.earnitapi.domain.Goal;
-import com.mobiledi.earnitapi.domain.Task;
-import com.mobiledi.earnitapi.repository.GoalRepository;
-import com.mobiledi.earnitapi.repository.TasksRepository;
-import com.mobiledi.earnitapi.util.AppConstants;
-
-import static com.mobiledi.earnitapi.util.MessageConstants.*;
 
 @Slf4j
 @RestController
@@ -113,7 +112,8 @@ public class GoalController {
 				}
 			}
 			goal.setTally(tally);
-			goal.setTallyPercent(tally.divide(goal.getAmount().multiply(BigDecimal.valueOf(100))));
+			goal.setTallyPercent(tally
+					.divide(goal.getAmount().multiply(BigDecimal.valueOf(100)), 2, BigDecimal.ROUND_HALF_UP));
 		}
 		
 		List<Task> tasks = taskRepo.findByChildrenIdAndIsDeleted(id, false);
