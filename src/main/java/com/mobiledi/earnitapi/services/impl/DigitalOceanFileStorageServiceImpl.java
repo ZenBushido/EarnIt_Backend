@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.mobiledi.earnitapi.services.FileStorageService;
 import java.io.File;
 import java.io.InputStream;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,8 +29,16 @@ public class DigitalOceanFileStorageServiceImpl implements FileStorageService {
   }
 
   @Override
+  @SneakyThrows
   public InputStream getFile(String filePath) {
-    S3Object s3Object = amazonS3ClientForDigitalOcean.getObject(bucketForDigitalOcean, filePath);
-    return s3Object.getObjectContent();
+    S3Object s3Object = null;
+    try {
+      s3Object = amazonS3ClientForDigitalOcean.getObject(bucketForDigitalOcean, filePath);
+      return s3Object.getObjectContent();
+    } finally {
+      if (s3Object != null) {
+        s3Object.close();
+      }
+    }
   }
 }

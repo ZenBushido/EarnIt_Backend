@@ -113,11 +113,19 @@ public class ChildrenController {
 
   @GetMapping(value = "/childrens/{childId}/profile/images/{imageName}")
   @SneakyThrows
-  public void getProfilePicture(@PathVariable Integer childId, @PathVariable String imageName, HttpServletResponse httpServletResponse) {
-    Children children = childrenRepo.findById(childId).get();
-    InputStream inputStream = fileStorageService.getFile(children.getAvatar());
-    httpServletResponse.setContentType(StringConstant.CONTENT_TYPE_OCTET_STREAM);
-    IOUtils.copyLarge(inputStream, httpServletResponse.getOutputStream());
+  public void getProfilePicture(@PathVariable Integer childId, @PathVariable String imageName,
+      HttpServletResponse httpServletResponse) {
+    InputStream inputStream = null;
+    try {
+      Children children = childrenRepo.findById(childId).get();
+      inputStream = fileStorageService.getFile(children.getAvatar());
+      httpServletResponse.setContentType(StringConstant.CONTENT_TYPE_OCTET_STREAM);
+      IOUtils.copyLarge(inputStream, httpServletResponse.getOutputStream());
+    } finally {
+      if (inputStream != null) {
+        inputStream.close();
+      }
+    }
   }
 
   @PostMapping(value = "/childrens/profile/images")

@@ -71,12 +71,20 @@ public class ParentController {
 
   @GetMapping(value = "/parents/{parentId}/profile/images/{imageName}")
   @SneakyThrows
-  public void getProfilePicture(@PathVariable Integer parentId, @PathVariable String imageName, HttpServletResponse httpServletResponse) {
-    Parent parent = authenticatedUserProvider.getLoggedInParent();
-    authenticatedUserProvider.raiseErrorIfParentIdIsDifferentThanLoggedInUser(parentId);
-    InputStream inputStream = fileStorageService.getFile(parent.getAvatar());
-    httpServletResponse.setContentType(StringConstant.CONTENT_TYPE_OCTET_STREAM);
-    IOUtils.copyLarge(inputStream, httpServletResponse.getOutputStream());
+  public void getProfilePicture(@PathVariable Integer parentId, @PathVariable String imageName,
+      HttpServletResponse httpServletResponse) {
+    InputStream inputStream = null;
+    try {
+      Parent parent = authenticatedUserProvider.getLoggedInParent();
+      authenticatedUserProvider.raiseErrorIfParentIdIsDifferentThanLoggedInUser(parentId);
+      inputStream = fileStorageService.getFile(parent.getAvatar());
+      httpServletResponse.setContentType(StringConstant.CONTENT_TYPE_OCTET_STREAM);
+      IOUtils.copyLarge(inputStream, httpServletResponse.getOutputStream());
+    } finally {
+      if (inputStream != null) {
+        inputStream.close();
+      }
+    }
   }
 
   @PostMapping(value = "/parents/profile/images")

@@ -115,15 +115,24 @@ public class TaskController {
 
 	@GetMapping(value = "/tasks/{taskId}/images/{imageName}")
 	@SneakyThrows
-	public void getTaskPicture(@PathVariable Integer taskId, @PathVariable String imageName, HttpServletResponse httpServletResponse) {
+	public void getTaskPicture(@PathVariable Integer taskId, @PathVariable String imageName,
+			HttpServletResponse httpServletResponse) {
 		Optional<Task> task = taskRepo.findById(taskId);
-		if(!task.isPresent()){
-			throw new ValidationException("Task not found with task id : " + taskId, HttpStatus.NOT_FOUND.value());
+		if (!task.isPresent()) {
+			throw new ValidationException("Task not found with task id : " + taskId,
+					HttpStatus.NOT_FOUND.value());
 		}
-		String taskImageUrl = imageUtil.createTaskImageUrl(task.get(), imageName);
-		InputStream inputStream = fileStorageService.getFile(taskImageUrl);
-		httpServletResponse.setContentType(StringConstant.CONTENT_TYPE_OCTET_STREAM);
-		IOUtils.copyLarge(inputStream, httpServletResponse.getOutputStream());
+		InputStream inputStream = null;
+		try {
+			String taskImageUrl = imageUtil.createTaskImageUrl(task.get(), imageName);
+			inputStream = fileStorageService.getFile(taskImageUrl);
+			httpServletResponse.setContentType(StringConstant.CONTENT_TYPE_OCTET_STREAM);
+			IOUtils.copyLarge(inputStream, httpServletResponse.getOutputStream());
+		} finally {
+			if (inputStream != null) {
+				inputStream.close();
+			}
+		}
 	}
 
 	@RequestMapping(value = "/tasks", method = RequestMethod.POST)
