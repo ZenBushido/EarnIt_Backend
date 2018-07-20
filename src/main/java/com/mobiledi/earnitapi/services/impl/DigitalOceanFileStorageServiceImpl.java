@@ -2,10 +2,14 @@ package com.mobiledi.earnitapi.services.impl;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.mobiledi.earnitapi.services.FileStorageService;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import lombok.SneakyThrows;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,7 +38,11 @@ public class DigitalOceanFileStorageServiceImpl implements FileStorageService {
     S3Object s3Object = null;
     try {
       s3Object = amazonS3ClientForDigitalOcean.getObject(bucketForDigitalOcean, filePath);
-      return s3Object.getObjectContent();
+      try (S3ObjectInputStream stream = s3Object.getObjectContent()) {
+        ByteArrayOutputStream temp = new ByteArrayOutputStream();
+        IOUtils.copy(stream, temp);
+        return new ByteArrayInputStream(temp.toByteArray());
+      }
     } finally {
       if (s3Object != null) {
         s3Object.close();
