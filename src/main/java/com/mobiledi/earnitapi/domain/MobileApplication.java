@@ -1,8 +1,8 @@
 package com.mobiledi.earnitapi.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +32,6 @@ import lombok.ToString;
 @Builder(toBuilder = true)
 @EqualsAndHashCode
 @ToString
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator.class,
-    property = "id")
 public class MobileApplication {
 
   @Id
@@ -49,13 +46,13 @@ public class MobileApplication {
   @Column(name = "ignored_by_parent")
   private Boolean ignoredByParent = false;
 
+  @JsonProperty(access = Access.WRITE_ONLY)
   @JoinColumn(name = "children_id")
   @ManyToOne(targetEntity = Children.class)
-  @JsonIgnore
   private Children children;
 
-  @OneToMany(mappedBy = "mobileApplication", cascade = CascadeType.ALL, targetEntity = MobileApplicationUsage.class)
   @JsonIgnore
+  @OneToMany(mappedBy = "mobileApplication", cascade = CascadeType.ALL, targetEntity = MobileApplicationUsage.class)
   private List<MobileApplicationUsage> mobileApplicationUsages = new ArrayList<>();
 
 }

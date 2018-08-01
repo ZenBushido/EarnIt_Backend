@@ -1,7 +1,7 @@
 package com.mobiledi.earnitapi.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,9 +27,6 @@ import lombok.ToString;
 @Builder(toBuilder = true)
 @EqualsAndHashCode
 @ToString
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator.class,
-    property = "id")
 public class MobileApplicationUsage {
 
   @Id
@@ -51,6 +48,7 @@ public class MobileApplicationUsage {
   @Column(name = "duration_in_minute")
   private Long durationInMinute;
 
+  @JsonProperty(access = Access.WRITE_ONLY)
   @JoinColumn(name = "mobile_application_id")
   @ManyToOne(targetEntity = MobileApplication.class)
   private MobileApplication mobileApplication;
