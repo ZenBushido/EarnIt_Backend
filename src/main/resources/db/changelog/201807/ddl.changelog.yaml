@@ -1,0 +1,26 @@
+databaseChangeLog:
+ - changeSet:
+    id: create_tasks_mobile_application_join_table
+    author: mukesh_kumar
+    changes:
+      - createTable:
+          tableName: tasks_mobile_application
+          columns:
+            - column:
+                name: tasks_id
+                type: bigint
+            - column:
+                name: mobile_application_id
+                type: bigint
+      - addForeignKeyConstraint:
+          baseColumnNames: tasks_id
+          baseTableName: tasks_mobile_application
+          constraintName: tasks_mobile_application_tasks_id_fk
+          referencedColumnNames: id
+          referencedTableName: tasks
+      - addForeignKeyConstraint:
+          baseColumnNames: mobile_application_id
+          baseTableName: tasks_mobile_application
+          constraintName: tasks_mobile_application_id_fk
+          referencedColumnNames: id
+          referencedTableName: mobile_application

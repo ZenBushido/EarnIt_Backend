@@ -1,12 +1,11 @@
 package com.mobiledi.earnitapi.web;
 
 import com.mobiledi.earnitapi.domain.Children;
-import com.mobiledi.earnitapi.domain.MobileApplicationUsage;
 import com.mobiledi.earnitapi.domain.Parent;
-import com.mobiledi.earnitapi.dto.MobileApplicationUsageResponseDto;
 import com.mobiledi.earnitapi.dto.IgnoreMobileAppDto;
 import com.mobiledi.earnitapi.dto.MobileApplicationRequestDto;
 import com.mobiledi.earnitapi.dto.MobileApplicationUsageDto;
+import com.mobiledi.earnitapi.dto.MobileApplicationUsageResponseDto;
 import com.mobiledi.earnitapi.repository.ChildrenRepository;
 import com.mobiledi.earnitapi.repository.MobileApplicationUsageRepository;
 import com.mobiledi.earnitapi.services.MobileApplicationService;
@@ -29,8 +28,6 @@ import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;

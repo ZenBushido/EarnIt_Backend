@@ -31,6 +31,11 @@ public class MobileApplicationServiceImpl implements MobileApplicationService {
   @Autowired
   private ChildrenRepository childrenRepository;
 
+  @Override
+  public MobileApplication getMobileApplication(Long mobileApplicationId) {
+    return mobileApplicationRepository.findById(mobileApplicationId).get();
+  }
+
   @Transactional
   @SneakyThrows
   public void persist(List<MobileApplicationRequestDto> mobileApplicationRequestList,
