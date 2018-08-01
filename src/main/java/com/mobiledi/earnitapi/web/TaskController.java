@@ -7,6 +7,7 @@ import static com.mobiledi.earnitapi.util.MessageConstants.TASK_DELETED_FAILED_C
 import com.mobiledi.earnitapi.constants.StringConstant;
 import com.mobiledi.earnitapi.domain.Children;
 import com.mobiledi.earnitapi.domain.Goal;
+import com.mobiledi.earnitapi.domain.MobileApplication;
 import com.mobiledi.earnitapi.domain.Parent;
 import com.mobiledi.earnitapi.domain.Task;
 import com.mobiledi.earnitapi.domain.TaskComment;
@@ -20,6 +21,7 @@ import com.mobiledi.earnitapi.repository.custom.ChildrenRepositoryCustom;
 import com.mobiledi.earnitapi.repository.custom.TaskRepositoryCustom;
 import com.mobiledi.earnitapi.services.FileStorageService;
 import com.mobiledi.earnitapi.services.GoalServiceCustom;
+import com.mobiledi.earnitapi.services.MobileApplicationService;
 import com.mobiledi.earnitapi.util.AppConstants;
 import com.mobiledi.earnitapi.util.ImageUtil;
 import com.mobiledi.earnitapi.util.NotificationConstants.NotificationCategory;
@@ -30,6 +32,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletResponse;
@@ -44,7 +47,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -64,6 +66,9 @@ public class TaskController {
 
 	@Autowired
 	TaskCommentRepository taskCommentRepo;
+
+	@Autowired
+	private MobileApplicationService mobileApplicationService;
 
 	@Autowired
 	ChildrenRepositoryCustom childRepo;
@@ -141,6 +146,10 @@ public class TaskController {
 		task.setCreateDate(new Timestamp(new DateTime().getMillis()));
 		task.setStatus(AppConstants.TASK_CREATED);
 		task.setDeleted(false);
+		List<MobileApplication> mobileApplications = task.getAppsToBeBlockedOnOverdue().stream()
+				.map(mobileApplication -> mobileApplicationService.getMobileApplication(mobileApplication.getId()))
+				.collect(Collectors.toList());
+		task.setAppsToBeBlockedOnOverdue(mobileApplications);
 		Task taskObject = taskRepo.save(task);
 		sendPushNotification(taskObject);
 

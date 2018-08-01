@@ -1,11 +1,14 @@
 package com.mobiledi.earnitapi.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,6 +17,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -27,6 +32,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "tasks")
 @NamedQuery(name = "Task.findAll", query = "SELECT t FROM Task t")
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class Task implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -82,6 +90,13 @@ public class Task implements Serializable {
 
 	@Column(name = "should_lock_apps_if_task_overdue")
 	private boolean shouldLockAppsIfTaskOverdue;
+
+	@ManyToMany(cascade = {CascadeType.ALL})
+	@JoinTable(name = "tasks_mobile_application",
+			joinColumns = @JoinColumn(name = "tasks_id"),
+			inverseJoinColumns = @JoinColumn(name = "mobile_application_id")
+	)
+	private List<MobileApplication> appsToBeBlockedOnOverdue = new ArrayList<>();
 
 	public Task() {
 	}
@@ -218,5 +233,14 @@ public class Task implements Serializable {
 
 	public void setShouldLockAppsIfTaskOverdue(boolean shouldLockAppsIfTaskOverdue) {
 		this.shouldLockAppsIfTaskOverdue = shouldLockAppsIfTaskOverdue;
+	}
+
+	public List<MobileApplication> getAppsToBeBlockedOnOverdue() {
+		return appsToBeBlockedOnOverdue;
+	}
+
+	public void setAppsToBeBlockedOnOverdue(
+			List<MobileApplication> appsToBeBlockedOnOverdue) {
+		this.appsToBeBlockedOnOverdue = appsToBeBlockedOnOverdue;
 	}
 }

@@ -1,19 +1,19 @@
 package com.mobiledi.earnitapi.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -30,6 +30,9 @@ import javax.persistence.Transient;
 @Table(name = "childrens")
 @NamedQuery(name = "Children.findAll", query = "SELECT c FROM Children c")
 @JsonIgnoreProperties({ "isPasswordEncrypted", "mobileApplications" })
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "id")
 public class Children implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -83,6 +86,7 @@ public class Children implements Serializable {
 	private Boolean isPasswordEncrypted;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "children", targetEntity = MobileApplication.class)
+	@JsonIgnore
 	private List<MobileApplication> mobileApplications;
 
 	public Children() {

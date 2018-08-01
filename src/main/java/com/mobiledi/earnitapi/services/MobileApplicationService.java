@@ -1,6 +1,7 @@
 package com.mobiledi.earnitapi.services;
 
 import com.mobiledi.earnitapi.domain.Children;
+import com.mobiledi.earnitapi.domain.MobileApplication;
 import com.mobiledi.earnitapi.dto.MobileApplicationRequestDto;
 import java.util.List;
 
@@ -15,4 +16,6 @@ public interface MobileApplicationService {
   boolean doesApplicationExist(String name, Integer childrenId);
 
   void markTheAppIgnored(String name, Integer childrenId);
+
+  MobileApplication getMobileApplication(Long mobileApplicationId);
 }
