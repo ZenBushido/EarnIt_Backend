@@ -101,8 +101,8 @@ public class TaskController {
 	}
 
 	@RequestMapping(value = "/tasks/{childId}", method = RequestMethod.GET)
-	public ResponseEntity<?> findByChildId(@PathVariable int childId) throws JSONException {
-		return new ResponseEntity<Iterable<Task>>(taskRepo.findByChildrenIdAndIsDeleted(childId, false), HttpStatus.OK);
+	public List<Task> findByChildId(@PathVariable int childId) throws JSONException {
+		return taskRepo.findByChildrenIdAndIsDeleted(childId, false);
 	}
 
 	@RequestMapping(value = "/tasks/{taskId}/images", method = RequestMethod.POST)
