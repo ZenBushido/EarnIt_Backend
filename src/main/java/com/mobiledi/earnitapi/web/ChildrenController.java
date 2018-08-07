@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -145,6 +146,14 @@ public class ChildrenController {
     if (!children.isPresent()) {
       throw new ValidationException("Children not found with id : " + id, 400);
     }
+  }
+
+  @GetMapping(value = "/childrens/parents")
+  @SneakyThrows
+  public List<Integer> getParentsIds() {
+    Children child = authenticatedUserProvider.getLoggedInChild();
+    return child.getAccount().getParents().stream().map(parent -> parent.getId())
+        .collect(Collectors.toList());
   }
 
 }
