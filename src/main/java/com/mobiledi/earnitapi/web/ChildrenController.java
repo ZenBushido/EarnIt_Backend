@@ -5,6 +5,8 @@ import static com.mobiledi.earnitapi.util.MessageConstants.CHILDREN_DELETED_FAIL
 
 import com.mobiledi.earnitapi.constants.StringConstant;
 import com.mobiledi.earnitapi.domain.Children;
+import com.mobiledi.earnitapi.domain.MobileApplication;
+import com.mobiledi.earnitapi.domain.Parent;
 import com.mobiledi.earnitapi.domain.Task;
 import com.mobiledi.earnitapi.domain.custom.ApiError;
 import com.mobiledi.earnitapi.domain.custom.Response;
@@ -154,6 +156,18 @@ public class ChildrenController {
     Children child = authenticatedUserProvider.getLoggedInChild();
     return child.getAccount().getParents().stream().map(parent -> parent.getId())
         .collect(Collectors.toList());
+  }
+
+  @GetMapping(value = "/children/{childId}/mobileapplications")
+  @SneakyThrows
+  public List<MobileApplication> getMobileApplicationForChild(@PathVariable Integer childId) {
+    Parent parent = authenticatedUserProvider.getLoggedInParent();
+    Optional<Children> childrenOptional = parent.getAccount().getChildrens().stream()
+        .filter(children -> children.getId().equals(childId)).findFirst();
+    if (!childrenOptional.isPresent()) {
+      throw new ValidationException("No Child Found with childId : " + childId, 400);
+    }
+    return childrenOptional.get().getMobileApplications();
   }
 
 }
