@@ -31,7 +31,9 @@ public final class AppConstants {
 	public static final String SECRET_ACCESS_KEY = "eCuHfCGlOqRN6iWwP3rYfVHtJGVOFH6ZcaxTexI2";
 
 	// FCM CREDS
-	public static final String FIREBASE_SERVER_KEY = "AAAAtDs9b0g:APA91bFtYyKFsmri0hP_XNJsA8vCYcaoK0KBDZdAWU_jpsooH089ZaAnYmFT6EcjOu0n_0Cqiakc4FfLM_JugolfhZF2X_EkhTCELgCH0wO5hNwv_BxDwOyJJDChx8k0iKavhsXpswQj";
+	public static final String FIREBASE_SERVER_KEY = "AAAAWkBG0s4:APA91bFRFCoHNhgQUYRaGXs0IctCF1_0IGOtKzWuWlQ-CNjcak5SKZHKNaZ6-XblUrYRFj8HoSkMCsiQb2HLXrsEnu5cLli6RAswK8Ii1eqK2svf3NmypEQ4qrQi9Wh05r-OUnuXNo4j0sREklT02NA1UtWGyve1HQ"; 
+	//"AAAAtDs9b0g:APA91bFtYyKFsmri0hP_XNJsA8vCYcaoK0KBDZdAWU_jpsooH089ZaAnYmFT6EcjOu0n_0Cqiakc4FfLM_JugolfhZF2X_EkhTCELgCH0wO5hNwv_BxDwOyJJDChx8k0iKavhsXpswQj";
+	
 
 	// PARENT - CHILD ACCOUNT ACTIONS
 	public static enum ChildAccoutActionType {
